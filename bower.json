@@ -1,6 +1,6 @@
 {
   "name": "adapt-odi-fileInput",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "framework": ">=5.18.0",
   "homepage": "https://github.com/adaptlearning/adapt-odi-fileInput",
   "bugs": "https://github.com/adaptlearning/adapt-odi-fileInput/issues",

@@ -7,8 +7,8 @@
     "ariaRegion": {
       "type": "string",
       "required": true,
-      "default": "file input. Type your answer and then submit.",
-      "inputType": "file",
+      "default": "Text input. Type your answer and then submit.",
+      "inputType": "Text",
       "validators": [],
       "translatable": true
     }
@@ -25,9 +25,9 @@
       "type": "string",
       "required": false,
       "default": "",
-      "inputType": "file",
+      "inputType": "Text",
       "validators": [],
-      "help": "This is the instruction file",
+      "help": "This is the instruction text",
       "translatable": true
     },
     "_items": {
@@ -47,7 +47,7 @@
               "required": true,
               "default": "",
               "title": "Item",
-              "inputType": "file",
+              "inputType": "Text",
               "validators": ["required"],
               "help": "",
               "translatable": true
@@ -58,7 +58,7 @@
             "required": false,
             "default": "",
             "title": "Prefix",
-            "inputType": "file",
+            "inputType": "Text",
             "validators": [],
             "help": "Prefix for this item",
             "translatable": true
@@ -68,7 +68,7 @@
             "required": false,
             "default": "",
             "title": "Suffix",
-            "inputType": "file",
+            "inputType": "Text",
             "validators": [],
             "help": "Suffix for this item",
             "translatable": true
@@ -78,7 +78,7 @@
             "required": false,
             "default": "",
             "title": "Placeholder",
-            "inputType": "file",
+            "inputType": "Text",
             "validators": [],
             "help": "Hint or expected value of the input field",
             "translatable": true
@@ -181,7 +181,7 @@
           "required": false,
           "default": "",
           "title": "Feedback Title",
-          "inputType": "file",
+          "inputType": "Text",
           "validators": [],
           "help": "Leave blank to have the component's title shown instead.",
           "translatable": true
@@ -191,7 +191,7 @@
           "required": false,
           "default": "",
           "title": "Correct",
-          "inputType": "fileArea",
+          "inputType": "TextArea",
           "validators": [],
           "help": "Correct answer feedback for this question",
           "translatable": true
@@ -206,7 +206,7 @@
               "required": false,
               "default": "",
               "title": "Incorrect Final",
-              "inputType": "fileArea",
+              "inputType": "TextArea",
               "validators": [],
               "help": "Incorrect answer feedback for the final attempt",
               "translatable": true
@@ -216,7 +216,7 @@
               "required": false,
               "default": "",
               "title": "Incorrect Not Final",
-              "inputType": "fileArea",
+              "inputType": "TextArea",
               "validators": [],
               "help": "Incorrect answer feedback for any attempt apart from the last attempt. If you leave this blank, the 'Incorrect Final' feedback will be used instead.",
               "translatable": true
@@ -232,7 +232,7 @@
               "required": false,
               "default": "",
               "title": "Partly Correct Final",
-              "inputType": "fileArea",
+              "inputType": "TextArea",
               "validators": [],
               "help": "Partly correct answer feedback for the final attempt. If you leave this blank, the 'Incorrect Final' feedback will be used instead.",
               "translatable": true
@@ -242,7 +242,7 @@
               "required": false,
               "default": "",
               "title": "Partly Correct Not Final",
-              "inputType": "fileArea",
+              "inputType": "TextArea",
               "validators": [],
               "help": "Partly correct answer feedback for any attempt apart from the last attempt. If you leave this blank, the 'Partly Correct Final' feedback will be used instead.",
               "translatable": true
@@ -260,14 +260,14 @@
           "type": "object",
           "title": "Submit",
           "properties": {
-            "buttonfile": {
+            "buttonText": {
               "type": "string",
               "required": false,
               "default": "",
               "title": "",
               "inputType": "QuestionButton",
               "validators": [],
-              "help": "Button label file for the submit button",
+              "help": "Button label text for the submit button",
               "translatable": true
             },
             "ariaLabel": {
@@ -286,14 +286,14 @@
           "type": "object",
           "title": "Reset",
           "properties": {
-            "buttonfile": {
+            "buttonText": {
               "type": "string",
               "required": false,
               "default": "",
               "title": "",
               "inputType": "QuestionButton",
               "validators": [],
-              "help": "Button label file for the reset button",
+              "help": "Button label text for the reset button",
               "translatable": true
             },
             "ariaLabel": {
@@ -312,14 +312,14 @@
           "type": "object",
           "title": "Show Correct Answer",
           "properties": {
-            "buttonfile": {
+            "buttonText": {
               "type": "string",
               "required": false,
               "default": "",
               "title": "",
               "inputType": "QuestionButton",
               "validators": [],
-              "help": "Button label file to show the model answer",
+              "help": "Button label text to show the model answer",
               "translatable": true
             },
             "ariaLabel": {
@@ -338,14 +338,14 @@
           "type": "object",
           "title": "Hide Correct Answer",
           "properties": {
-            "buttonfile": {
+            "buttonText": {
               "type": "string",
               "required": false,
               "default": "",
               "title": "",
               "inputType": "QuestionButton",
               "validators": [],
-              "help": "Button label file to hide the model answer",
+              "help": "Button label text to hide the model answer",
               "translatable": true
             },
             "ariaLabel": {
@@ -364,14 +364,14 @@
           "type": "object",
           "title": "Show Feedback",
           "properties": {
-            "buttonfile": {
+            "buttonText": {
               "type": "string",
               "required": false,
               "default": "",
               "title": "",
               "inputType": "QuestionButton",
               "validators": [],
-              "help": "Button label file to show feedback",
+              "help": "Button label text to show feedback",
               "translatable": true
             },
             "ariaLabel": {
@@ -386,21 +386,21 @@
             }
           }
         },
-        "remainingAttemptsfile": {
+        "remainingAttemptsText": {
           "type": "string",
           "required": false,
           "default": "",
-          "title": "Attempts Remaining file",
+          "title": "Attempts Remaining Text",
           "inputType": "QuestionButton",
           "validators": [],
           "help": "Shown when there are multiple attempts left",
           "translatable": true
         },
-        "remainingAttemptfile": {
+        "remainingAttemptText": {
           "type": "string",
           "required": false,
           "default": "",
-          "title": "Final Attempt file",
+          "title": "Final Attempt Text",
           "inputType": "QuestionButton",
           "validators": [],
           "help": "Shown when there is one attempt left",
