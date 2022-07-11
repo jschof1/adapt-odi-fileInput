@@ -96,7 +96,7 @@ export default class fileInputView extends QuestionView {
           resolve(res.target.result);
         };
         reader.onerror = err => reject(err);
-        return reader.readAsfile(file);
+        return reader.readAsText(file);
       });
     }
     async function onSubmit() {
