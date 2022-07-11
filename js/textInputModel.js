@@ -1,11 +1,11 @@
 import QuestionModel from 'core/js/models/questionModel';
 
-class TextInputModel extends QuestionModel {
+class fileInputModel extends QuestionModel {
 
   init() {
     super.init();
 
-    this.set('_genericAnswerIndexOffset', TextInputModel.genericAnswerIndexOffset);
+    this.set('_genericAnswerIndexOffset', fileInputModel.genericAnswerIndexOffset);
 
     this.setupQuestionItemIndexes();
     this.checkCanSubmit();
@@ -41,8 +41,8 @@ class TextInputModel extends QuestionModel {
     const genericAnswers = this.get('_answers');
     this.get('_items').forEach(item => {
       const answerIndex = userAnswer[item._index];
-      if (answerIndex >= TextInputModel.genericAnswerIndexOffset) {
-        item.userAnswer = genericAnswers[answerIndex - TextInputModel.genericAnswerIndexOffset];
+      if (answerIndex >= fileInputModel.genericAnswerIndexOffset) {
+        item.userAnswer = genericAnswers[answerIndex - fileInputModel.genericAnswerIndexOffset];
         item._answerIndex = answerIndex;
       } else if (answerIndex > -1) {
         item.userAnswer = item._answers[answerIndex];
@@ -180,6 +180,6 @@ class TextInputModel extends QuestionModel {
 
 }
 
-TextInputModel.genericAnswerIndexOffset = 65536;
+fileInputModel.genericAnswerIndexOffset = 65536;
 
-export default TextInputModel;
+export default fileInputModel;

@@ -1,14 +1,14 @@
 {
-  "name": "adapt-contrib-textInput",
+  "name": "adapt-odi-fileInput",
   "version": "5.0.0",
   "framework": ">=5.18.0",
-  "homepage": "https://github.com/adaptlearning/adapt-contrib-textInput",
-  "bugs": "https://github.com/adaptlearning/adapt-contrib-textInput/issues",
-  "component" : "textinput",
-  "targetAttribute": "_textinput",
-  "displayName" : "Text Input",
-  "description": "A question component that allows the learner to input text based upon a question stem.",
-  "main": "/js/adapt-contrib-textInput.js",
+  "homepage": "https://github.com/adaptlearning/adapt-contrib-fileInput",
+  "bugs": "https://github.com/adaptlearning/adapt-contrib-fileInput/issues",
+  "component" : "fileinput",
+  "targetAttribute": "_fileinput",
+  "displayName" : "file Input",
+  "description": "A question component that allows the learner to input file based upon a question stem.",
+  "main": "/js/adapt-odi-fileInput.js",
   "keywords": [
     "adapt-plugin",
     "adapt-component"

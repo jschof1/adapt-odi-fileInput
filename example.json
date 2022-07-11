@@ -4,11 +4,11 @@
         "_id": "c-05",
         "_parentId": "b-05",
         "_type": "component",
-        "_component": "textinput",
+        "_component": "fileinput",
         "_classes": "",
         "_layout": "full",
-        "title": "Title of our text input component",
-        "displayTitle": "Title of our text input component",
+        "title": "Title of our file input component",
+        "displayTitle": "Title of our file input component",
         "body": "If A is 1% and Z is 26%, what are B, C and D?",
         "instruction": "",
         "_attempts": 1,
@@ -65,27 +65,27 @@
         "_comment": "You only need to include _buttons if you want to override the button labels that are set in course.json",
         "_buttons": {
             "_submit": {
-                "buttonText": "Submit",
+                "buttonfile": "Submit",
                 "ariaLabel": "Select here to submit your answer."
             },
             "_reset": {
-                "buttonText": "Reset",
+                "buttonfile": "Reset",
                 "ariaLabel": ""
             },
             "_showCorrectAnswer": {
-                "buttonText": "Correct Answer",
+                "buttonfile": "Correct Answer",
                 "ariaLabel": ""
             },
             "_hideCorrectAnswer": {
-                "buttonText": "My Answer",
+                "buttonfile": "My Answer",
                 "ariaLabel": ""
             },
             "_showFeedback": {
-                "buttonText": "Show feedback",
+                "buttonfile": "Show feedback",
                 "ariaLabel": ""
             },
-            "remainingAttemptsText": "attempts remaining",
-            "remainingAttemptText": "final attempt"
+            "remainingAttemptsfile": "attempts remaining",
+            "remainingAttemptfile": "final attempt"
         },
         "_pageLevelProgress": {
             "_isEnabled": true

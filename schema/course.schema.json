@@ -1,5 +1,5 @@
 {
-  "$anchor": "textinput-course",
+  "$anchor": "fileinput-course",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "$patch": {
@@ -12,14 +12,14 @@
           "type": "object",
           "default": {},
           "properties": {
-            "_textinput": {
+            "_fileinput": {
               "type": "object",
               "default": {},
               "properties": {
                 "ariaRegion": {
                   "type": "string",
                   "title": "ARIA region",
-                  "default": "Text input. Type your answer and then submit.",
+                  "default": "file input. Type your answer and then submit.",
                   "_adapt": {
                     "translatable": true
                   }

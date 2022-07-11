@@ -1,13 +1,13 @@
 import QuestionView from 'core/js/views/questionView';
 import Papa from './csvToJson';
 
-export default class TextInputView extends QuestionView {
+export default class fileInputView extends QuestionView {
 
   events() {
     return {
-      'focus .js-textinput-textbox': 'clearValidationError',
-      'change .js-textinput-textbox': 'onInputChanged',
-      'keyup .js-textinput-textbox': 'onInputChanged'
+      'focus .js-fileinput-filebox': 'clearValidationError',
+      'change .js-fileinput-filebox': 'onInputChanged',
+      'keyup .js-fileinput-filebox': 'onInputChanged'
     };
   }
 
@@ -26,7 +26,7 @@ export default class TextInputView extends QuestionView {
   setAllItemsEnabled(isEnabled) {
     this.model.get('_items').forEach((item, index) => {
       
-      const $itemInput = this.$('.js-textinput-textbox').eq(index);
+      const $itemInput = this.$('.js-fileinput-filebox').eq(index);
       // console.log($itemInput[0].files[0]);
       $itemInput.prop('disabled', !isEnabled);
     });
@@ -37,7 +37,7 @@ export default class TextInputView extends QuestionView {
   }
 
   clearValidationError() {
-    this.$('.js-textinput-textbox').removeClass('has-error');
+    this.$('.js-fileinput-filebox').removeClass('has-error');
   }
 
   // Blank method for question to fill out when the question cannot be submitted
@@ -46,20 +46,20 @@ export default class TextInputView extends QuestionView {
   }
 
   showValidationError() {
-    this.$('.js-textinput-textbox').addClass('has-error');
+    this.$('.js-fileinput-filebox').addClass('has-error');
   }
 
   // This is important and should give the user feedback on how they answered the question
   // Normally done through ticks and crosses by adding classes
   showMarking() {
     if (!this.model.get('_canShowMarking')) return;
-      const item = this.$('.js-textinput-item')
+      const item = this.$('.js-fileinput-item')
       item.removeClass('is-correct is-incorrect').addClass(item._isCorrect ? 'is-correct' : 'is-correct');
     }
 
   // Used by the question view to reset the look and feel of the component.
   resetQuestion() {
-    this.$('.js-textinput-textbox').prop('disabled', !this.model.get('_isEnabled')).val('');
+    this.$('.js-fileinput-filebox').prop('disabled', !this.model.get('_isEnabled')).val('');
 
     this.model.set({
       _isAtLeastOneCorrectSelection: false,
@@ -76,18 +76,18 @@ export default class TextInputView extends QuestionView {
     console.log(correctAnswers, item._answers[0])
     this.model.get('_items').forEach((item, index) => {
       const correctAnswer = correctAnswers ? correctAnswers[index][0] : item._answers[0];
-      this.$('.js-textinput-textbox').eq(index).val('yofamy');
+      this.$('.js-fileinput-filebox').eq(index).val('yofamy');
     });
   }
 
   hideCorrectAnswer() {
     this.model.get('_items').forEach((item, index) => {
-      this.$('.js-textinput-textbox').eq(index).val(item.userAnswer);
+      this.$('.js-fileinput-filebox').eq(index).val(item.userAnswer);
     });
   }
 
   getFile(){
-    const $itemInput = this.$('.js-textinput-textbox').eq(0);
+    const $itemInput = this.$('.js-fileinput-filebox').eq(0);
     function readFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -96,7 +96,7 @@ export default class TextInputView extends QuestionView {
           resolve(res.target.result);
         };
         reader.onerror = err => reject(err);
-        return reader.readAsText(file);
+        return reader.readAsfile(file);
       });
     }
     async function onSubmit() {
@@ -180,7 +180,7 @@ async checkTest(){
   for (let i of userResult.userResults) {
     arrResults = `${Object.values(i)}`
   }
- return $('#feedback').text(arrResults)
+ return $('#feedback').file(arrResults)
 
  }
  async onInputChanged(e) {
@@ -189,7 +189,7 @@ async checkTest(){
     const $input = $(e.target)
     let result = await this.getFile()
     this.createTable(result.data)
-    this.model.setItemUserAnswer($input.parents('.js-textinput-item').index(), userResult);
+    this.model.setItemUserAnswer($input.parents('.js-fileinput-item').index(), userResult);
   }
 
 }

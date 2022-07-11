@@ -1,4 +1,4 @@
-.textinput {
+.fileinput {
   // Class to show the users selection
   // --------------------------------------------------
   &__widget.show-user-answer .is-correct &-item__correct-icon,
@@ -14,7 +14,7 @@
   }
 }
 
-.textinput-item {
+.fileinput-item {
   position: relative;
   display: flex;
   flex-wrap: nowrap;
@@ -27,17 +27,17 @@
     max-width: 15%;
   }
 
-  &__textbox-container {
+  &__filebox-container {
     width: inherit;
   }
 
-  &__textbox {
+  &__filebox {
     width: inherit;
   }
 
   // Hide 'X' icon for IE11 and Edge 12+
   // Issue: https://github.com/adaptlearning/adapt_framework/issues/1913
-  &__textbox::-ms-clear {
+  &__filebox::-ms-clear {
     .u-display-none;
   }
 
@@ -45,7 +45,7 @@
     display: none;
   }
 
-  // Text input item icons
+  // file input item icons
   // --------------------------------------------------
   &__correct-icon .icon {
     .icon-tick;
