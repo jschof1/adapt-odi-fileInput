@@ -1,57 +1,81 @@
-.fileinput {
+.mcq {
+  &__item {
+    position: relative;
+  }
+
+  &__item-input {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+  }
+
+  &__item-label {
+    display: block;
+    z-index: 1;
+  }
+
+  &__item-label:not(.is-disabled) {
+    cursor: pointer;
+  }
+
+  &__item-icon {
+    display: none;
+    height: 20px;
+  }
+
+  // MCQ item icons
+  // --------------------------------------------------
+  // &__item-answer-icon.is-radio .icon {
+  //   .icon-radio-unchecked;
+  // }
+
+  // &__item-answer-icon.is-checkbox .icon {
+  //   .icon-checkbox-unchecked;
+  // }
+
+  // &__item-label.is-selected &__item-answer-icon.is-radio .icon {
+  //   .icon-radio-checked;
+  // }
+
+  // &__item-label.is-selected &__item-answer-icon.is-checkbox .icon {
+  //   .icon-checkbox-checked;
+  // }
+
+  &__item-correct-icon .icon {
+    .icon-tick;
+  }
+
+  &__item-incorrect-icon .icon {
+    .icon-cross;
+  }
+
+  // Class to show the selection icons until the component is complete
+  // --------------------------------------------------
+  &__widget:not(.is-complete) &__item-answer-icon {
+    display: block;
+  }
+
   // Class to show the users selection
   // --------------------------------------------------
-  &__widget.show-user-answer .is-correct &-item__correct-icon,
-  &__widget.show-user-answer .is-incorrect &-item__incorrect-icon {
+  &__widget.show-user-answer .is-correct .is-selected &__item-correct-icon,
+  &__widget.show-user-answer .is-incorrect .is-selected &__item-incorrect-icon {
+    display: block;
+  }
+
+  &__widget.show-user-answer &__item:not(.is-correct):not(.is-incorrect) .is-selected &__item-answer-icon {
     display: block;
   }
 
   // Class to show the correct answers
   // --------------------------------------------------
-  &__widget.show-correct-answer .is-correct &-item__correct-icon,
-  &__widget.show-correct-answer .is-incorrect &-item__correct-icon {
+  &__widget.show-correct-answer .is-correct .is-selected &__item-correct-icon,
+  &__widget.show-correct-answer .is-incorrect .is-selected &__item-correct-icon {
     display: block;
   }
-}
 
-.fileinput-item {
-  position: relative;
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  width: 100%;
-
-  &__prefix-container,
-  &__suffix-container {
-    width: 25%;
-    max-width: 15%;
-  }
-
-  &__filebox-container {
-    width: inherit;
-  }
-
-  &__filebox {
-    width: inherit;
-  }
-
-  // Hide 'X' icon for IE11 and Edge 12+
-  // Issue: https://github.com/adaptlearning/adapt_framework/issues/1913
-  &__filebox::-ms-clear {
-    .u-display-none;
-  }
-
-  &__icon {
-    display: none;
-  }
-
-  // file input item icons
-  // --------------------------------------------------
-  &__correct-icon .icon {
-    .icon-tick;
-  }
-
-  &__incorrect-icon .icon {
-    .icon-cross;
+  &__widget.show-correct-answer &__item:not(.is-correct):not(.is-incorrect) .is-selected &__item-answer-icon {
+    display: block;
   }
 }

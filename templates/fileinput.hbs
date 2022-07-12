@@ -1,66 +1,43 @@
-<div class="component__inner fileinput__inner">
+<div class="component__inner mcq__inner" role="{{#if _isRadio}}radiogroup{{else}}group{{/if}}" {{#any displayTitle body instruction}}aria-labelledby="{{_id}}-header"{{/any}}>
 
   {{> component this}}
 
-  {{! complex unless and if combination to set the correct classes for CSS to use in showing marking and disabled states}}
-  <div class="component__widget fileinput__widget{{#unless _isEnabled}} is-disabled{{#if _isInteractionComplete}} is-complete is-submitted show-user-answer{{#if _isCorrect}} is-correct{{/if}}{{/if}}{{/unless}}">
+  <div class="component__widget mcq__widget{{#unless _isEnabled}} is-disabled{{#if _isInteractionComplete}} is-complete is-submitted show-user-answer{{#if _isCorrect}} is-correct{{/if}}{{/if}}{{/unless}}">
 
     {{#each _items}}
-    <div class="fileinput-item js-fileinput-item{{#unless ../_isEnabled}}{{#if ../_canShowMarking}}{{#if _isCorrect}} is-correct{{else}} is-incorrect{{/if}}{{/if}}{{/unless}}">
+    <div class="mcq__item js-mcq-item item-{{@index}}{{#unless ../_isEnabled}}{{#if ../_canShowMarking}}{{#if _isCorrect}} is-correct{{else}} is-incorrect{{/if}}{{/if}}{{/unless}}">
 
-      {{#if prefix}}
-      <div class="fileinput-item__prefix-container">
-      <label class="fileinput-item__prefix" id="{{../_id}}-{{@index}}-aria" for="{{../_id}}-{{@index}}" aria-label="{{{prefix}}}">
-        {{{prefix}}}
-      </label>
-      </div>
-      {{/if}}
+      <input class="mcq__item-input js-item-input" type="file" id="{{../_id}}-{{@index}}-input" {{#if ../_isRadio}}name="{{../_id}}-item" {{/if}} type="file"{{#unless ../_isEnabled}} disabled{{/unless}} aria-label="{{{a11y_normalize text}}}" data-adapt-index="{{_index}}" />
 
-      {{#if ../_isEnabled}}
-      <div class="fileinput-item__filebox-container">
-        <input class="fileinput-item__filebox js-fileinput-filebox" type="file" placeholder="{{{placeholder}}}" data-id="input-{{@index}}" id="{{../_id}}-{{@index}}" {{#if prefix}}aria-labelledby="{{../_id}}-{{@index}}-aria"{{else}}aria-label="{{{placeholder}}}"{{/if}} value="true">
+      <label class="mcq__item-label js-item-label{{#unless ../_isEnabled}} is-disabled{{/unless}}{{#if _isSelected}} is-selected{{/if}}" aria-hidden="true" for="{{../_id}}-{{@index}}-input" data-adapt-index="{{_index}}" >
 
-        <div class="fileinput-item__state">
-          <div class="fileinput-item__icon fileinput-item__correct-icon">
+        <div class="mcq__item-state">
+          <div class="mcq__item-icon mcq__item-answer-icon{{#if ../_isRadio}} is-radio{{else}} is-checkbox{{/if}}">
             <div class="icon"></div>
           </div>
-          <div class="fileinput-item__icon fileinput-item__incorrect-icon">
+          <div class="mcq__item-icon mcq__item-correct-icon">
+            <div class="icon"></div>
+          </div>
+          <div class="mcq__item-icon mcq__item-incorrect-icon">
             <div class="icon"></div>
           </div>
         </div>
 
-      </div>
-      {{else}}
-      <div class="fileinput-item__filebox-container">
-        <input class="fileinput-item__filebox js-fileinput-filebox" type="file" placeholder="{{{placeholder}}}" data-id="input-{{@index}}" value="{{userAnswer}}" disabled="true">
-
-        <div class="fileinput-item__state">
-          <div class="fileinput-item__icon fileinput-item__correct-icon">
-            <div class="icon"></div>
-          </div>
-          <div class="fileinput-item__icon fileinput-item__incorrect-icon">
-            <div class="icon"></div>
+        <div class="mcq__item-text">
+          <div class="mcq__item-text-inner">
+            {{{text}}}
           </div>
         </div>
 
-      </div>
-      {{/if}}
-
-      {{#if suffix}}
-      <div class="fileinput-item__suffix-container">
-      <label class="fileinput-item__suffix" id="{{../_id}}-{{@index}}-aria" for="{{../_id}}-{{@index}}" aria-label="{{{suffix}}}">
-        {{{suffix}}}
       </label>
-      </div>
-      {{/if}}
 
     </div>
     {{/each}}
+    
 
   </div>
-  <div id="feedback"></div>
+    <div id="feedback"></div>
   <div id="result"></div>
-
   <div class="btn__container"></div>
 
 </div>

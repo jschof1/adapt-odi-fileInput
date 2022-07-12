@@ -3,91 +3,60 @@ import Papa from './csvToJson';
 
 export default class fileInputView extends QuestionView {
 
-  events() {
-    return {
-      'focus .js-fileinput-filebox': 'clearValidationError',
-      'change .js-fileinput-filebox': 'onInputChanged',
-      'keyup .js-fileinput-filebox': 'onInputChanged'
-    };
+ events() {
+  return{
+    'focus .js-item-input': 'onItemFocus',
+    'blur .js-item-input': 'onItemBlur',
+    'change .js-item-input': 'onInputChanged',
+    'keyup .js-item-input': 'onKeyPress'
+  };
+ }
+
+
+  resetQuestionOnRevisit() {
+    this.resetQuestion();
   }
 
   setupQuestion() {
     this.model.setupRandomisation();
   }
 
-  disableQuestion() {
-    this.setAllItemsEnabled(false);
-  }
-
-  enableQuestion() {
-    this.setAllItemsEnabled(true);
-  }
-
-  setAllItemsEnabled(isEnabled) {
-    this.model.get('_items').forEach((item, index) => {
-      
-      const $itemInput = this.$('.js-fileinput-filebox').eq(index);
-      // console.log($itemInput[0].files[0]);
-      $itemInput.prop('disabled', !isEnabled);
-    });
-  }
-
   onQuestionRendered() {
     this.setReadyStatus();
   }
 
-  clearValidationError() {
-    this.$('.js-fileinput-filebox').removeClass('has-error');
+  onItemFocus(event) {
+    if (!this.model.isInteractive()) return;
+
+    const index = parseInt($(event.currentTarget).data('adapt-index'));
+    const item = this.model.getChildren().findWhere({ _index: index });
+    item.set('_isHighlighted', true);
   }
 
-  // Blank method for question to fill out when the question cannot be submitted
-  onCannotSubmit() {
-    this.showValidationError();
+  onItemBlur(event) {
+    const index = $(event.currentTarget).data('adapt-index');
+    const item = this.model.getChildren().findWhere({ _index: index });
+    item.set('_isHighlighted', false);
   }
 
-  showValidationError() {
-    this.$('.js-fileinput-filebox').addClass('has-error');
-  }
-
-  // This is important and should give the user feedback on how they answered the question
-  // Normally done through ticks and crosses by adding classes
-  showMarking() {
-    if (!this.model.get('_canShowMarking')) return;
-      const item = this.$('.js-fileinput-item')
-      item.removeClass('is-correct is-incorrect').addClass(item._isCorrect ? 'is-correct' : 'is-correct');
-    }
+  
 
   // Used by the question view to reset the look and feel of the component.
   resetQuestion() {
-    this.$('.js-fileinput-filebox').prop('disabled', !this.model.get('_isEnabled')).val('');
-
-    this.model.set({
-      _isAtLeastOneCorrectSelection: false,
-      _isCorrect: undefined
-    });
+    this.model.resetActiveItems();
+    this.model.resetItems();
   }
 
   showCorrectAnswer() {
-    // console.log(this.model.get('_feedback'))
-
-    // if correct answers is true i.e. it exists then return correcAnsnwers
-    // if it isnt then return 
-    const correctAnswers = this.model.get('_answers');
-    console.log(correctAnswers, item._answers[0])
-    this.model.get('_items').forEach((item, index) => {
-      const correctAnswer = correctAnswers ? correctAnswers[index][0] : item._answers[0];
-      this.$('.js-fileinput-filebox').eq(index).val('yofamy');
-    });
+    this.model.set('_isCorrectAnswerShown', true);
   }
 
   hideCorrectAnswer() {
-    this.model.get('_items').forEach((item, index) => {
-      this.$('.js-fileinput-filebox').eq(index).val(item.userAnswer);
-    });
+    this.model.set('_isCorrectAnswerShown', false);
   }
 
   getFile(){
-    const $itemInput = this.$('.js-fileinput-filebox').eq(0);
+    const $itemInput = this.$('.js-item-input').eq(0);
     function readFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -167,10 +136,15 @@ async checkTest(){
   }
   checkRows(Object.keys(result.data[0]), 7)
 
+  const item = this.model.get('_items')[0];
+  item._score = points;
+
+  console.log(item)
   let resultObj = {
     userResults: userResults,
     points  : points
   }
+ 
   return resultObj
 }
 
@@ -180,16 +154,39 @@ async checkTest(){
   for (let i of userResult.userResults) {
     arrResults = `${Object.values(i)}`
   }
- return $('#feedback').file(arrResults)
+  this.model.get('_items')[0].feedback = arrResults
+  this.model.get('_feedback').correct = arrResults
+  this.model.get('_feedback')._incorrect.final = arrResults
+  this.model.get('_feedback')._partlyCorrect.final = arrResults
+ return $('#feedback').text(arrResults)
 
  }
  async onInputChanged(e) {
+
+  if (!this.model.isInteractive()) return;
+
+  const index = $(e.currentTarget).data('adapt-index');
+  const itemModel = this.model.getItem(index);
+  let shouldSelect = !itemModel.get('_isActive');
+
+  if (this.model.isSingleSelect()) {
+    // Assume a click is always a selection
+    shouldSelect = true;
+    this.model.resetActiveItems();
+  } else if (shouldSelect && this.model.isAtActiveLimit()) {
+    // At the selection limit, deselect the last item
+    this.model.getLastActiveItem().toggleActive(false);
+  }
+
+  // Select or deselect accordingly
+  itemModel.toggleActive(shouldSelect);
+
    let userResult = await this.checkTest()
     this.feedback()
     const $input = $(e.target)
     let result = await this.getFile()
     this.createTable(result.data)
-    this.model.setItemUserAnswer($input.parents('.js-fileinput-item').index(), userResult);
+    // this.model.setItemUserAnswer($input.parents('.js-item-input').index(), userResult);
   }
-
 }
+

@@ -1,8 +1,14 @@
-import Adapt from 'core/js/adapt';
-import fileInputView from './fileInputView';
-import fileInputModel from './fileInputModel';
+define([
+  'core/js/adapt',
+  './fileInputView',
+  'core/js/models/itemsQuestionModel'
+], function(Adapt, fileInputView, ItemsQuestionModel) {
 
-export default Adapt.register('fileinput', {
-  view: fileInputView,
-  model: fileInputModel
+  return Adapt.register('fileinput', {
+    view: fileInputView,
+    // Extend ItemsQuestionModel to distinguish McqModel in
+    // the inheritance chain and allow targeted model extensions.
+    model: ItemsQuestionModel.extend({})
+  });
+
 });

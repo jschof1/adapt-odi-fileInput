@@ -1,5 +1,5 @@
 {
-  "$anchor": "fileinput-course",
+  "$anchor": "fileInput-course",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "$patch": {
@@ -12,14 +12,14 @@
           "type": "object",
           "default": {},
           "properties": {
-            "_fileinput": {
+            "_mcq": {
               "type": "object",
               "default": {},
               "properties": {
                 "ariaRegion": {
                   "type": "string",
                   "title": "ARIA region",
-                  "default": "file input. Type your answer and then submit.",
+                  "default": "Multiple choice question",
                   "_adapt": {
                     "translatable": true
                   }

@@ -7,9 +7,45 @@
     "ariaRegion": {
       "type": "string",
       "required": true,
-      "default": "Text input. Type your answer and then submit.",
+      "default": "Multiple choice question",
       "inputType": "Text",
       "validators": [],
+      "translatable": true
+    },
+    "ariaCorrectAnswer": {
+      "type": "string",
+      "required": true,
+      "default": "The correct answer is {{{correctAnswer}}}",
+      "inputType": "Text",
+      "validators": [],
+      "help": "Text that will be announced by the screen reader when the learner selects the 'correct answer' button (and there is only one correct answer)",
+      "translatable": true
+    },
+    "ariaCorrectAnswers": {
+      "type": "string",
+      "required": true,
+      "default": "The correct answers are {{{correctAnswer}}}",
+      "inputType": "Text",
+      "validators": [],
+      "help": "Text that will be announced by the screen reader when the learner selects the 'correct answer' button (and there is more than one correct answer)",
+      "translatable": true
+    },
+    "ariaUserAnswer": {
+      "type": "string",
+      "required": true,
+      "default": "The answer you chose was {{{userAnswer}}}",
+      "inputType": "Text",
+      "validators": [],
+      "help": "Text that will be announced by the screen reader when the learner selects the 'hide correct answer' button (and the learner only chose one answer)",
+      "translatable": true
+    },
+    "ariaUserAnswers": {
+      "type": "string",
+      "required": true,
+      "default": "The answers you chose were {{{userAnswer}}}",
+      "inputType": "Text",
+      "validators": [],
+      "help": "Text that will be announced by the screen reader when the learner selects the 'hide correct answer' button (and the learner chose more than one answer)",
       "translatable": true
     }
   },
@@ -18,7 +54,7 @@
       "type": "string",
       "required": true,
       "enum": ["full-width", "half-width", "both"],
-      "default": "both",
+      "default": "half-width",
       "editorOnly": true
     },
     "instruction": {
@@ -33,55 +69,56 @@
     "_items": {
       "type": "array",
       "required": true,
-      "title": "Input Items",
+      "title": "Answers",
+      "help": "The possible answers available to the learner",
       "items": {
         "type": "object",
-        "required": false,
+        "required": true,
         "properties": {
-          "_answers": {
-            "type": "array",
-            "required": false,
-            "title": "Answers",
-            "items": {
-              "type": "string",
-              "required": true,
-              "default": "",
-              "title": "Item",
-              "inputType": "Text",
-              "validators": ["required"],
-              "help": "",
-              "translatable": true
-            }
+          "text": {
+            "type": "string",
+            "required": true,
+            "default": "",
+            "title": "Answer Text",
+            "inputType": "Text",
+            "validators": ["required"],
+            "help": "This text will display as the answer text",
+            "translatable": true
           },
-          "prefix": {
+          "_shouldBeSelected": {
+            "type": "boolean",
+            "required": true,
+            "default": false,
+            "title": "Correct answer?",
+            "inputType": "Checkbox",
+            "validators": []
+          },
+          "_isPartlyCorrect": {
+            "type": "boolean",
+            "required": true,
+            "default": false,
+            "title": "Is only partly correct?",
+            "inputType": "Checkbox",
+            "validators": []
+          },
+          "feedback": {
             "type": "string",
             "required": false,
             "default": "",
-            "title": "Prefix",
-            "inputType": "Text",
+            "title": "Answer-specific feedback",
+            "inputType": "TextArea",
             "validators": [],
-            "help": "Prefix for this item",
+            "help": "When 'Selectable Items' is set to 1, this can be used to give the user feedback specific to the answer they selected - if incorrect.",
             "translatable": true
           },
-          "suffix": {
-            "type": "string",
+          "_score": {
+            "type": "number",
             "required": false,
-            "default": "",
-            "title": "Suffix",
-            "inputType": "Text",
-            "validators": [],
-            "help": "Suffix for this item",
-            "translatable": true
-          },
-          "placeholder": {
-            "type": "string",
-            "required": false,
-            "default": "",
-            "title": "Placeholder",
-            "inputType": "Text",
-            "validators": [],
-            "help": "Hint or expected value of the input field",
-            "translatable": true
+            "default": 0,
+            "title": "Score",
+            "inputType": "Number",
+            "validators": ["required", "number"],
+            "help": "If item scoring is enabled, selected item scores are summed to give the question score."
           }
         }
       }
@@ -132,7 +169,7 @@
       "type": "boolean",
       "required": false,
       "default": false,
-      "title": "Randomise Items",
+      "title": "Randomise answers",
       "inputType": "Checkbox",
       "validators": []
     },
@@ -145,6 +182,15 @@
       "validators": [],
       "help": "If disabled, recording the user's answer(s) to this question to cmi.interactions on the LMS will be disabled for this component only."
     },
+    "_hasItemScoring": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "title": "Enable item scoring",
+      "inputType": "Checkbox",
+      "validators": [],
+      "help": "When disabled, this question scores 0 for incorrect and 'Question Weight' for correct. When enabled, this question scores by summing the scores of the selected options."
+    },
     "_questionWeight": {
       "type": "number",
       "required": false,
@@ -152,24 +198,16 @@
       "title": "Question Weight",
       "inputType": "Number",
       "validators": ["number"],
-      "help": "How much this question is worth"
+      "help": "When item scoring is disabled, this is the question score for a correct response."
     },
-    "_allowsAnyCase": {
-      "type": "boolean",
+    "_selectable": {
+      "type": "number",
       "required": true,
-      "default": false,
-      "title": "Allow 'any case' answers",
-      "inputType": "Checkbox",
-      "validators": [],
-      "help": "Should the check of the user's answer(s) be case-insensitive or case-sensitive?"
-    },
-    "_allowsPunctuation": {
-      "type": "boolean",
-      "required": true,
-      "default": false,
-      "title": "Allow Punctuation",
-      "inputType": "Checkbox",
-      "validators": []
+      "default": 1,
+      "title": "Selectable Items",
+      "inputType": "Number",
+      "validators": ["number", "required"],
+      "help": "How many items are selectable"
     },
     "_feedback": {
       "type": "object",

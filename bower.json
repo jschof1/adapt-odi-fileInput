@@ -1,12 +1,12 @@
 {
   "name": "adapt-odi-fileInput",
   "version": "0.0.1",
-  "framework": ">=5.18.0",
+  "framework": ">=5",
   "homepage": "https://github.com/adaptlearning/adapt-odi-fileInput",
   "bugs": "https://github.com/adaptlearning/adapt-odi-fileInput/issues",
-  "component" : "fileinput",
+  "component": "fileinput",
   "targetAttribute": "_fileinput",
-  "displayName" : "file Input",
+  "displayName": "file Input",
   "description": "A question component that allows the learner to input file based upon a question stem.",
   "main": "/js/adapt-odi-fileInput.js",
   "keywords": [

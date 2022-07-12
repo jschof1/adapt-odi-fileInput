@@ -1,5 +1,5 @@
 {
-  "$anchor": "fileinput-component",
+  "$anchor": "fileInput-component",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "$merge": {
@@ -8,13 +8,14 @@
     },
     "with": {
       "required": [
-        "_attempts"
+        "_attempts",
+        "_selectable"
       ],
       "properties": {
         "_supportedLayout": {
           "type": "string",
           "title": "Supported layout",
-          "default": "both",
+          "default": "half-width",
           "enum": [
             "full-width",
             "half-width",
@@ -35,40 +36,44 @@
         "_items": {
           "type": "array",
           "title": "Items",
+          "description": "The possible answers available to the learner",
           "items": {
             "type": "object",
             "properties": {
-              "_answers": {
-                "type": "array",
-                "title": "Answers",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "prefix": {
+              "text": {
                 "type": "string",
-                "title": "Prefix",
+                "title": "Text",
+                "description": "This text will display as the answer text",
                 "default": "",
                 "_adapt": {
                   "translatable": true
                 }
               },
-              "suffix": {
-                "type": "string",
-                "title": "Suffix",
-                "default": "",
-                "_adapt": {
-                  "translatable": true
-                }
+              "_shouldBeSelected": {
+                "type": "boolean",
+                "title": "Mark this option as correct",
+                "default": false
               },
-              "placeholder": {
+              "_isPartlyCorrect": {
+                "type": "boolean",
+                "title": "Mark this option as partly correct",
+                "default": false
+              },
+              "feedback": {
                 "type": "string",
-                "title": "Placeholder",
-                "description": "Hint or expected value of the input field",
+                "title": "Answer-specific feedback",
+                "description": "When 'Selectable items' is set to 1, this can be used to give the user feedback specific to the answer they selected - if incorrect",
                 "default": "",
                 "_adapt": {
                   "translatable": true
-                }
+                },
+                "_backboneForms": "TextArea"
+              },
+              "_score": {
+                "type": "number",
+                "title": "Score",
+                "description": "If item scoring is enabled, selected item scores are summed to give the question score",
+                "default": 0
               }
             }
           }
@@ -102,7 +107,7 @@
         },
         "_isRandom": {
           "type": "boolean",
-          "title": "Randomise items",
+          "title": "Randomise answers",
           "default": false
         },
         "_recordInteraction": {
@@ -111,22 +116,23 @@
           "description": "If disabled, recording the user's answer(s) to this question to cmi.interactions on the LMS will be disabled for this component only",
           "default": true
         },
+        "_hasItemScoring": {
+          "type": "boolean",
+          "title": "Enable item scoring",
+          "description": "When disabled, this question scores 0 for incorrect and 'Question weight' for correct. When enabled, this question scores by summing the scores of the selected options",
+          "default": false
+        },
         "_questionWeight": {
           "type": "number",
           "title": "Question weight",
-          "description": "How much this question is worth",
+          "description": "When item scoring is disabled, this is the question score for a correct response",
           "default": 1
         },
-        "_allowsAnyCase": {
-          "type": "boolean",
-          "title": "Disable case sensitivity",
-          "description": "Should the check of the user's answer(s) be case-insensitive or case-sensitive?",
-          "default": false
-        },
-        "_allowsPunctuation": {
-          "type": "boolean",
-          "title": "Remove punctuation from user input",
-          "default": false
+        "_selectable": {
+          "type": "number",
+          "title": "Selectable items",
+          "description": "How many items are selectable",
+          "default": 1
         },
         "_feedback": {
           "type": "object",
@@ -150,7 +156,7 @@
               "_adapt": {
                 "translatable": true
               },
-              "_backboneForms": "fileArea"
+              "_backboneForms": "TextArea"
             },
             "_incorrect": {
               "type": "object",
@@ -165,7 +171,7 @@
                   "_adapt": {
                     "translatable": true
                   },
-                  "_backboneForms": "fileArea"
+                  "_backboneForms": "TextArea"
                 },
                 "notFinal": {
                   "type": "string",
@@ -175,7 +181,7 @@
                   "_adapt": {
                     "translatable": true
                   },
-                  "_backboneForms": "fileArea"
+                  "_backboneForms": "TextArea"
                 }
               }
             },
@@ -192,7 +198,7 @@
                   "_adapt": {
                     "translatable": true
                   },
-                  "_backboneForms": "fileArea"
+                  "_backboneForms": "TextArea"
                 },
                 "notFinal": {
                   "type": "string",
@@ -202,7 +208,7 @@
                   "_adapt": {
                     "translatable": true
                   },
-                  "_backboneForms": "fileArea"
+                  "_backboneForms": "TextArea"
                 }
               }
             }
@@ -218,9 +224,9 @@
               "title": "Submit",
               "default": {},
               "properties": {
-                "buttonfile": {
+                "buttonText": {
                   "type": "string",
-                  "title": "Button file",
+                  "title": "Button text",
                   "default": "",
                   "_adapt": {
                     "translatable": true
@@ -241,9 +247,9 @@
               "title": "Reset",
               "default": {},
               "properties": {
-                "buttonfile": {
+                "buttonText": {
                   "type": "string",
-                  "title": "Button file",
+                  "title": "Button text",
                   "default": "",
                   "_adapt": {
                     "translatable": true
@@ -264,9 +270,9 @@
               "title": "Show correct answer",
               "default": {},
               "properties": {
-                "buttonfile": {
+                "buttonText": {
                   "type": "string",
-                  "title": "Button file",
+                  "title": "Button text",
                   "default": "",
                   "_adapt": {
                     "translatable": true
@@ -287,9 +293,9 @@
               "title": "Hide correct answer",
               "default": {},
               "properties": {
-                "buttonfile": {
+                "buttonText": {
                   "type": "string",
-                  "title": "Button file",
+                  "title": "Button text",
                   "default": "",
                   "_adapt": {
                     "translatable": true
@@ -310,9 +316,9 @@
               "title": "Show feedback",
               "default": {},
               "properties": {
-                "buttonfile": {
+                "buttonText": {
                   "type": "string",
-                  "title": "Button file",
+                  "title": "Button text",
                   "default": "",
                   "_adapt": {
                     "translatable": true
@@ -328,7 +334,7 @@
                 }
               }
             },
-            "remainingAttemptsfile": {
+            "remainingAttemptsText": {
               "type": "string",
               "title": "Remaining attempts label",
               "default": "",
@@ -336,7 +342,7 @@
                 "translatable": true
               }
             },
-            "remainingAttemptfile": {
+            "remainingAttemptText": {
               "type": "string",
               "title": "Final attempt label",
               "default": "",
