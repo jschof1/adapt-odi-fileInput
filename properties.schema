@@ -75,20 +75,10 @@
         "type": "object",
         "required": true,
         "properties": {
-          "text": {
-            "type": "string",
-            "required": true,
-            "default": "",
-            "title": "Answer Text",
-            "inputType": "Text",
-            "validators": ["required"],
-            "help": "This text will display as the answer text",
-            "translatable": true
-          },
           "_shouldBeSelected": {
             "type": "boolean",
             "required": true,
-            "default": false,
+            "default": true,
             "title": "Correct answer?",
             "inputType": "Checkbox",
             "validators": []
@@ -156,23 +146,6 @@
       "inputType": "Checkbox",
       "validators": []
     },
-    "_shouldDisplayAttempts": {
-      "type": "boolean",
-      "required": false,
-      "default": false,
-      "title": "Display Attempts",
-      "inputType": "Checkbox",
-      "validators": [],
-      "help": "Display the number of attempts remaining?"
-    },
-    "_isRandom": {
-      "type": "boolean",
-      "required": false,
-      "default": false,
-      "title": "Randomise answers",
-      "inputType": "Checkbox",
-      "validators": []
-    },
     "_recordInteraction": {
       "type": "boolean",
       "required": false,
@@ -181,15 +154,6 @@
       "inputType": "Checkbox",
       "validators": [],
       "help": "If disabled, recording the user's answer(s) to this question to cmi.interactions on the LMS will be disabled for this component only."
-    },
-    "_hasItemScoring": {
-      "type": "boolean",
-      "required": false,
-      "default": false,
-      "title": "Enable item scoring",
-      "inputType": "Checkbox",
-      "validators": [],
-      "help": "When disabled, this question scores 0 for incorrect and 'Question Weight' for correct. When enabled, this question scores by summing the scores of the selected options."
     },
     "_questionWeight": {
       "type": "number",
@@ -423,26 +387,6 @@
               "translatable": true
             }
           }
-        },
-        "remainingAttemptsText": {
-          "type": "string",
-          "required": false,
-          "default": "",
-          "title": "Attempts Remaining Text",
-          "inputType": "QuestionButton",
-          "validators": [],
-          "help": "Shown when there are multiple attempts left",
-          "translatable": true
-        },
-        "remainingAttemptText": {
-          "type": "string",
-          "required": false,
-          "default": "",
-          "title": "Final Attempt Text",
-          "inputType": "QuestionButton",
-          "validators": [],
-          "help": "Shown when there is one attempt left",
-          "translatable": true
         }
       }
     }
