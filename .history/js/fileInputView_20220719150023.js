@@ -487,7 +487,7 @@ async checkTest(){
   for (let i of userResult.userResults) {
     arrResults = `${Object.values(i)}`
   }
-
+=
   this.model.get('_items')[0].feedback = arrResults
   this.model.get('_feedback').correct = arrResults
   this.model.get('_feedback')._incorrect.final = arrResults
