@@ -457,43 +457,7 @@ export default class fileInputView extends QuestionView {
 
     // console.log(input[0])
 
-
-    const schema = {
-      "type": "object",
-      "properties": {
-        OrderID: {
-          type: "integer"
-        },
-        Customer: {
-          type: "string"
-        },
-        Booker: {
-          type: "string"
-        },
-        Ordered: {
-          type: "integer"
-        },
-        Required: {
-          type: "integer"
-        },
-        Shipped: {
-          type: "integer"
-        },
-        REGION: {
-          type: "string"
-        },
-        Country: {
-          type: "string"
-        },
-        Value: {
-          type: "string"
-        },
-        Rating: {
-          type: "integer"
-        }
-      },
-      "additionalProperties": true,
-    }
+ let schema = this.model.get('_schema')
     let results = []
     // var testSchemaValidator = ajv.compile(schema);
     for (let i = 0; i < arrayResult.length; i++) {
