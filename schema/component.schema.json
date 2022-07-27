@@ -33,11 +33,6 @@
             "translatable": true
           }
         },
-        "_schema": {
-          "type": "string",
-          "title": "Schema Input",
-          "default": ""
-        },
         "_items": {
           "type": "array",
           "title": "Items",
