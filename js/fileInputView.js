@@ -1,8 +1,6 @@
 import QuestionView from 'core/js/views/questionView';
 import Papa from './csvToJson';
 import Ajv from './ajv7.min.js';
-// import DataTable from './jquery.dataTables.min.js';
-
 
 export default class fileInputView extends QuestionView {
 
@@ -84,21 +82,6 @@ export default class fileInputView extends QuestionView {
 
   async createTable(input) {
 
-    // var tableData = [];
-
-    //values
-    // for (var i = 0; i < input.length; i++) {
-    //   var record = input[i];
-    //   var recordVals = [];
-    //   var numCols = Object.keys(record).length;
-    //   for (var j = 0; j < numCols; j++) {
-    //     var key = Object.keys(record)[j];
-    //     var value = record[key];
-    //     recordVals.push(value);
-    //   }
-    //   tableData.push(recordVals);
-    // }
-
     //columns
     let col = [];
     for (let i = 0; i < input.length; i++) {
@@ -115,14 +98,6 @@ export default class fileInputView extends QuestionView {
     for (var i in col) {
       tableHeader.push({ title: col[i] });
     }
-
-    // document.ready( "DOMContentLoaded", completed );
-    // $('result').this.DataTable({
-    //   "dom": '<"top"ip>rt<"clear">',
-    //   data: tableData, // extract this from input file
-    //   columns: tableHeader,
-    // });
-
 
     let table = document.createElement("table");
     table.setAttribute('id', 'table');
@@ -216,45 +191,6 @@ export default class fileInputView extends QuestionView {
         console.log('There are blank rows in the csv.', `see here: ${csv_rows_blank} / ${csv_rows.length - 1}`);
       }
     };
-    // Stray/Unclosed quote: if there are any unclosed quotes in the file
-    //  const unclosedQuote = (csv) => {
-    //   let csv_lines = csv.split('\n');
-    //   let csv_rows = [];
-    //   for (let i = 1; i < csv_lines.length-1; i++) {
-    //     csv_rows.push(csv_lines[i].split(','));
-    //   }
-    //   let csv_rows_unclosed_quotes = [];
-    //   for (let i = 0; i < csv_rows.length-1; i++) {
-    //     for (let j = 0; j < csv_rows[i].length; j++) {
-    //       if (csv_rows[i][j].split('"').length % 2 != 0) {
-    //         csv_rows_unclosed_quotes.push(i);
-    //       }
-    //     }
-    //   }
-    //   if (csv_rows_unclosed_quotes.length > 0) {
-    //     console.log('There are unclosed quotes in the csv file.', `see here: ${csv_rows_unclosed_quotes}`);
-    //   }
-    // };
-    // or could check whole file, start to finish
-    //   function checkQuotesInCSV(str) {
-    //   var arr = str.split(',');
-    //   for (var i = 0; i < arr.length; i++) {
-    //     if (arr[i].indexOf('"') !== -1) {
-    //       if (arr[i].indexOf('"') === 0) {
-    //         if (arr[i].lastIndexOf('"') === arr[i].length - 1) {
-    //           return true;
-    //         } else {
-    //           return false;
-    //         }
-    //       } else {
-    //         return false;
-    //       }
-    //     } else {
-    //       return true;
-    //     }
-    //   }
-    // }
-
 
     // Whitespace: if there is any whitespace between commas and double quotes around fields
     const whiteSpace = (csv) => {
@@ -294,11 +230,6 @@ export default class fileInputView extends QuestionView {
     if (!file_exists) {
       console.log('404 error');
     }
-    // Wrong content type: if the content type isn't set text/csv
-    // Common Warnings
-    // We also return the following warnings:
-    // Encoding: if you don't use UTF-8 as the encoding for the file
-
     const checkUTF8 = (csv) => {
       let utf8Text = csv;
       try {
@@ -407,35 +338,17 @@ export default class fileInputView extends QuestionView {
       }
     };
 
-    // find(result.contents)
     lineBreaks(result.contents)
     undeclaredHeader(result.contents)
     raggedRows(result.contents)
     singleCommaSeparated(result.contents)
     blankRows(result.contents)
-    // unclosedQuote(result.contents)
     whiteSpace(result.contents)
     checkUTF8(result.contents)
     inconsistentValues(result.contents)
     emptyColumnName(result.contents)
     duplicateColumnName(result.contents)
   }
-  // async runSchema(input){
-  //   const schema = {
-  //     properties: {
-  //       OrderID: {type: "string"},
-  //       Booker: {type: "string"},
-  //       Value: {type: "float32"},
-  //       Rating: {type: "int32"}
-  //     },
-  //     additionalProperties: true
-  //   };
-
-  //   const serialize = ajv.compileSerializer(schema);
-  //   return serialize
-  // }
-
-
 
   async validate(input) {
     function convertIntObj(input) {
@@ -449,80 +362,31 @@ export default class fileInputView extends QuestionView {
       }
       return res;
     }
-
     var result = convertIntObj(input);
     var arrayResult = Object.values(result);
     const ajv = new Ajv({ strict: false });
 
-
-    // console.log(input[0])
-
- let schema = this.model.get('_schema')
+    let schema = this.model.get('_schema')
     let results = []
     // var testSchemaValidator = ajv.compile(schema);
     for (let i = 0; i < arrayResult.length; i++) {
-      // console.log(arrayResult[i])
-      var valid = ajv.validate(schema, arrayResult[i]);
-      // console.log(valid)
-      // // let valid = ajv.validate(schema, input[0]);
-      // console.log('logging if valid:', valid)
-      // console.log(ajv.errors)
-
+      let valid = ajv.validate(schema, arrayResult[i]);
       if (!valid) {
         results.push(ajv.errors)
       }
-      // let colName =  ajv.errors['instancePath'].slice(1,);
-      // let colType = ajv.errors['keyword'];
-      // let problem = ajv.errors['message'];
-      // console.log(colName, colType, problem)
-      // if (colType === "type") {
-      //   console.log(`"${colName}" ${colType} ${problem}.`)
-      // } else if (validate.errors[0]["params"]["error"] === "missing") {
-      //   let missingCol = validate.errors[0]["params"]["missingProperty"];
-      //   console.log(`Cannot find required property "${missingCol}".`)
-      // }
-    }
-    console.log('hi')
-    if (results === []){
-      return $('#feedback').html('ajv found no errors')
-    }
-    else if (validate.errors[0]["params"]["error"] === "missing"){
-      let missingCol = validate.errors[0]["params"]["missingProperty"];
+      console.log('hi')
+      if (results === []) {
+        return $('#feedback').html('ajv found no errors')
+      }
+      else if (validate.errors[0]["params"]["error"] === "missing") {
+        let missingCol = validate.errors[0]["params"]["missingProperty"];
         console.log(`Cannot find required property "${missingCol}".`)
-    }
-    else{
-    $('#feedback').html(`the <strong> ${results[0][0]['instancePath'].slice(1,).toLowerCase()} </strong> an${results[0][0]['message']}`)
+      }
+      else {
+        $('#feedback').html(`the <strong> ${results[0][0]['instancePath'].slice(1,).toLowerCase()} </strong> an${results[0][0]['message']}`)
+      }
     }
   }
-
-  // async checkTest(){
-  //   let userResults = []
-  //   let points = 0
-  //   let result = await this.getFile()
-  //   function checkRows(input, x) {
-  //     let numRows = input.length;
-  //     if (numRows == x) {
-  //       console.log(true)
-  //       userResults.push({'row':`✅  There are ${x} rows in the dataset. One point awarded.`});
-  //       points += 1
-  //     }
-  //     else if (numRows !== x) {
-  //       userResults.push({'row':`✏️  There are not ${x} rows in the dataset. No points awarded`});
-  //     }
-  //   }
-  //   checkRows(Object.keys(result.parse.data[0]), 7)
-
-  //   const item = this.model.get('_items')[0];
-  //   item._score = points;
-
-  //   console.log(item)
-  //   let resultObj = {
-  //     userResults: userResults,
-  //     points  : points
-  //   }
-  //   return resultObj
-  // }
-
   //  async feedback(){
   //   let userResult = await this.checkTest()
   //   let arrResults
@@ -535,8 +399,8 @@ export default class fileInputView extends QuestionView {
   //   this.model.get('_feedback')._incorrect.final = arrResults
   //   this.model.get('_feedback')._partlyCorrect.final = arrResults
   //  return $('#feedback').text(arrResults)
-
   //  }
+
   async onInputChanged(e) {
 
     if (!this.model.isInteractive()) return;
@@ -553,20 +417,12 @@ export default class fileInputView extends QuestionView {
       // At the selection limit, deselect the last item
       this.model.getLastActiveItem().toggleActive(false);
     }
-
     // Select or deselect accordingly
     itemModel.toggleActive(shouldSelect);
-
     let result = await this.getFile()
-    // console.log(result.parse.data)
     this.checkCsvStructure()
-    //  let userResult = await this.checkTest()
     this.validate(result.parse.data)
-    // this.feedback()
-    const $input = $(e.target)
     this.createTable(result.parse.data)
-
-    // this.model.setItemUserAnswer($input.parents('.js-item-input').index(), userResult);
   }
 }
 
