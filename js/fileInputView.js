@@ -63,16 +63,55 @@ export default class fileInputView extends QuestionView {
         header: true
       });
       let fileObj = await { parse: parse, contents: contents }
-      
+
       return await fileObj
     }
 
     return onSubmit()
   }
 
+  async createTable(){
+    let result = await this.getFile()
+    // console.log(result.parse.data, 'hi')
+
+    let tableData = []
+
+    for (var i = 0; i < result.parse.data.length; i++) {
+      var record = result.parse.data[i];
+      var recordVals = [];
+      var numCols = Object.keys(record).length;
+      for (var j = 0; j < numCols; j++) {
+        var key = Object.keys(record)[j];
+        var value = record[key];
+        recordVals.push(value);
+      }
+      tableData.push(recordVals);
+    }
+
+    window.alert = function () { }
+
+    var col = [];
+    var tableHeader = [];
+    for (var i = 0; i < result.parse.data.length; i++) {
+      for (var key in result.parse.data[i]) {
+        if (col.indexOf(key) === -1) {
+          col.push(key);
+        }
+      }
+    }
+    for (var i in col) {
+      tableHeader.push({ title: col[i] });
+    }
+
+    $('#example').DataTable({
+      // "dom": '<"top"ip>rt<"clear">',
+      data: tableData, // extract this from input file
+      columns: tableHeader,
+    });
+  }
   async checkCsvStructure() {
     const csvResults = [];
-    // let result = await this.getFile()
+    let result = await this.getFile()
     const lineBreaks = (csv) => {
       let csv_lines = csv.split('\n');
       let csv_line_breaks = [];
@@ -303,13 +342,13 @@ export default class fileInputView extends QuestionView {
     // this.model.get('_feedback')._incorrect.final = userResult
     // this.model.get('_feedback')._partlyCorrect.final = userResult
 
-    return await csvResults
-    
+    return csvResults
 
-    // return $('#feedbackCsv').html(`<ul> ${csvResults.map((result) => {
-    //   return `<li>${result}</li>`
-    // })} </ul>`);
   }
+
+  // return $('#feedbackCsv').html(`<ul> ${csvResults.map((result) => {
+  //   return `<li>${result}</li>`
+  // })} </ul>`);
 
   async validateAjv(input) {
     function convertIntObj(input) {
@@ -357,42 +396,55 @@ export default class fileInputView extends QuestionView {
     let userResult = userAjvResults
 
 
-    return await userResult
+    return userResult
     // return $('#feedbackAjv').html(`<ul> ${userResult.map((result) => {
     //   return `<li>${result}</li>`
     // })} </ul>`);
 
   }
-  // async feedback() {
-  //   let userResult = await [this.validateAjv(), this.checkCsvStructure()]
-  //   console.log(userResult)
-  //   for (let i of userResult.userResults) {
-  //     arrResults = `${Object.values(i)}`
-  //     console.log(arrResults)
+  async feedback() {
+    let ajv = await this.validateAjv()
+    let csv = await this.checkCsvStructure()
+    // console.log(userResult)
+    // for (let i of userResult.userResults) {
+    //   arrResults = `${Object.values(i)}`
+    //   console.log(arrResults)
+    // }
+
+    let csvErrors = csv.length
+    let ajvErrors = ajv.length
+
+    let combinedArr = ajv.concat(csv)
+
+    console.log(combinedArr)
+
+    this.model.get('_items')[0].feedback = combinedArr
+    this.model.get('_feedback').correct = combinedArr
+    this.model.get('_feedback')._incorrect.final = combinedArr
+    this.model.get('_feedback')._partlyCorrect.final = combinedArr
+    combinedArr.map(() => {
+
+    })
+    return $('#feedback').html(`<ul> ${combinedArr.map((result) => {
+      return `<li>${result}</li>`
+    }).join('')} </ul>`);
+  }
+
+  // async removeButton() {
+  //   const tableContents = $("#example-wrapper")
+  //   const $itemInput = this.$('.js-item-input').eq(0)
+  //   // console.log($itemInput)
+  //   /* create button that removes uploaded file so that the user can reupload */
+  //   var clearUploadButton = document.createElement('button');
+  //   clearUploadButton.innerHTML = 'Clear Upload';
+  //   clearUploadButton.onclick = function() {
+  //     $itemInput.val('');
+  //     tableContents.html('');
+  //     $itemInput.trigger('change');
+
+  //   };
+  //   document.body.appendChild(clearUploadButton);
   //   }
-
-  //   this.model.get('_items')[0].feedback = arrResults
-  //   this.model.get('_feedback').correct = arrResults
-  //   this.model.get('_feedback')._incorrect.final = arrResults
-  //   this.model.get('_feedback')._partlyCorrect.final = arrResults
-  //   return $('#feedback').text(arrResults)
-  // }
-
-  async removeButton() {
-    const tableContents = $("#example-wrapper")
-    const $itemInput = this.$('.js-item-input').eq(0)
-    // console.log($itemInput)
-    /* create button that removes uploaded file so that the user can reupload */
-    var clearUploadButton = document.createElement('button');
-    clearUploadButton.innerHTML = 'Clear Upload';
-    clearUploadButton.onclick = function() {
-      $itemInput.val('');
-      tableContents.html('');
-      $itemInput.trigger('change');
-
-    };
-    document.body.appendChild(clearUploadButton);
-    }
 
   async onInputChanged(e) {
 
@@ -407,53 +459,9 @@ export default class fileInputView extends QuestionView {
 
     // Select or deselect accordingly
     itemModel.toggleActive(shouldSelect);
-
-    let result = await this.getFile()
-    console.log(result.parse.data, 'hi')
-
-    let tableData = []
-
-    for (var i = 0; i < result.parse.data.length; i++) {
-      var record = result.parse.data[i];
-      var recordVals = [];
-      var numCols = Object.keys(record).length;
-      for (var j = 0; j < numCols; j++) {
-        var key = Object.keys(record)[j];
-        var value = record[key];
-        recordVals.push(value);
-      }
-      tableData.push(recordVals);
-    }
-
-    window.alert = function() {}
-
-    var col = [];
-    var tableHeader = [];
-    for (var i = 0; i < result.parse.data.length; i++) {
-      for (var key in result.parse.data[i]) {
-        if (col.indexOf(key) === -1) {
-          col.push(key);
-        }
-      }
-    }
-    for (var i in col) {
-      tableHeader.push({ title: col[i] });
-    }
-
-    $('#example').DataTable({
-      // "dom": '<"top"ip>rt<"clear">',
-      data: tableData, // extract this from input file
-      columns: tableHeader,
-    });
-
     // this.removeButton()
-    console.log('hi')
-    // this.postRender(result.parse.data[0])
-    // this.createTable(result.parse.data)
-    let finalCsv = this.checkCsvStructure(result.parse.data)
-    // let validateAjv = this.validateAjv(result.parse.data)
-    console.log(this.finalCsv)
-    // this.feedbackAjv()s
+    this.createTable()
+    this.feedback()
   }
 }
 
