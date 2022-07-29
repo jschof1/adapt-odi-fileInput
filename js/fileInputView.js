@@ -63,72 +63,16 @@ export default class fileInputView extends QuestionView {
         header: true
       });
       let fileObj = await { parse: parse, contents: contents }
+      
       return await fileObj
     }
 
     return onSubmit()
   }
 
-  async createTable(input) {
-    // //columns
-    // let col = [];
-    // for (let i = 0; i < input.length; i++) {
-    //   for (let key in input[i]) {
-    //     if (col.indexOf(key) === -1) {
-    //       col.push(key);
-    //     }
-    //   }
-    // }
-
-
-    // //get headers
-    // let tableHeader = [];
-    // for (var i in col) {
-    //   tableHeader.push({ title: col[i] });
-    // }
-
-    // let table = document.createElement("table");
-    // table.setAttribute('id', 'table');
-    // let tr = table.insertRow(-1);
-    // for (let i = 0; i < col.length; i++) {
-    //   let th = document.createElement("th");
-    //   th.innerHTML = col[i];
-    //   tr.appendChild(th);
-    // }
-    // for (let i = 0; i < 8; i++) {
-    //   tr = table.insertRow(-1);
-    //   for (let j = 0; j < col.length; j++) {
-    //     let tabCell = tr.insertCell(-1);
-    //     tabCell.innerHTML = input[i][col[j]];
-    //   }
-    // }
-    // let divContainer = document.getElementById("result");
-    // divContainer.innerHTML = "";
-    // divContainer.appendChild(table);
-    // $('table').attr('id', 'table');
-
-
-    // const gridConfig = {
-    //   caption: 'Hello-world',
-    //   data: input
-    // };
-    // console.log(input)
-    // console.log(ZingGrid)
-
-    // let zingGridRef = new ZingGrid('myFirstGrid', gridConfig);
-    // // console.log(zingGridRef)
-
-    // return zingGridRef
-  }
-  // async postRender(input) {
-  //     $('#table').DataTable({
-  //       data: input, // extract this from input file
-  //       columns: input[0],
-  //     });
-  // }
   async checkCsvStructure() {
     const csvResults = [];
-    let result = await this.getFile()
+    // let result = await this.getFile()
     const lineBreaks = (csv) => {
       let csv_lines = csv.split('\n');
       let csv_line_breaks = [];
@@ -342,7 +286,7 @@ export default class fileInputView extends QuestionView {
         csvResults.push('Not all the columns are unique.', `see here: ${csv_headers_unique}`)
       }
     };
-
+    // console.log(result.contents)
     lineBreaks(result.contents)
     undeclaredHeader(result.contents)
     raggedRows(result.contents)
@@ -359,9 +303,12 @@ export default class fileInputView extends QuestionView {
     // this.model.get('_feedback')._incorrect.final = userResult
     // this.model.get('_feedback')._partlyCorrect.final = userResult
 
-    return $('#feedbackCsv').html(`<ul> ${csvResults.map((result) => {
-      return `<li>${result}</li>`
-    })} </ul>`);
+    return await csvResults
+    
+
+    // return $('#feedbackCsv').html(`<ul> ${csvResults.map((result) => {
+    //   return `<li>${result}</li>`
+    // })} </ul>`);
   }
 
   async validateAjv(input) {
@@ -410,14 +357,15 @@ export default class fileInputView extends QuestionView {
     let userResult = userAjvResults
 
 
-    return $('#feedbackAjv').html(`<ul> ${userResult.map((result) => {
-      return `<li>${result}</li>`
-    })} </ul>`);
+    return await userResult
+    // return $('#feedbackAjv').html(`<ul> ${userResult.map((result) => {
+    //   return `<li>${result}</li>`
+    // })} </ul>`);
 
   }
   // async feedback() {
-  //   let userResult = await this.validateAjv();
-  //   let arrResults
+  //   let userResult = await [this.validateAjv(), this.checkCsvStructure()]
+  //   console.log(userResult)
   //   for (let i of userResult.userResults) {
   //     arrResults = `${Object.values(i)}`
   //     console.log(arrResults)
@@ -429,6 +377,22 @@ export default class fileInputView extends QuestionView {
   //   this.model.get('_feedback')._partlyCorrect.final = arrResults
   //   return $('#feedback').text(arrResults)
   // }
+
+  async removeButton() {
+    const tableContents = $("#example-wrapper")
+    const $itemInput = this.$('.js-item-input').eq(0)
+    // console.log($itemInput)
+    /* create button that removes uploaded file so that the user can reupload */
+    var clearUploadButton = document.createElement('button');
+    clearUploadButton.innerHTML = 'Clear Upload';
+    clearUploadButton.onclick = function() {
+      $itemInput.val('');
+      tableContents.html('');
+      $itemInput.trigger('change');
+
+    };
+    document.body.appendChild(clearUploadButton);
+    }
 
   async onInputChanged(e) {
 
@@ -445,7 +409,7 @@ export default class fileInputView extends QuestionView {
     itemModel.toggleActive(shouldSelect);
 
     let result = await this.getFile()
-    console.log(result.parse.data)
+    console.log(result.parse.data, 'hi')
 
     let tableData = []
 
@@ -481,11 +445,15 @@ export default class fileInputView extends QuestionView {
       data: tableData, // extract this from input file
       columns: tableHeader,
     });
+
+    // this.removeButton()
+    console.log('hi')
     // this.postRender(result.parse.data[0])
     // this.createTable(result.parse.data)
-    this.checkCsvStructure(result.parse.data)
-    this.validateAjv(result.parse.data)
-    // this.feedbackAjv()
+    let finalCsv = this.checkCsvStructure(result.parse.data)
+    // let validateAjv = this.validateAjv(result.parse.data)
+    console.log(this.finalCsv)
+    // this.feedbackAjv()s
   }
 }
 
