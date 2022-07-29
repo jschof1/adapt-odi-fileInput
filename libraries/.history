@@ -120,42 +120,12 @@ export default class fileInputView extends QuestionView {
 
     // return zingGridRef
   }
-  async renderTable(input) {
-    // let tableData = []
-
-    // for (var i = 0; i < input.length; i++) {
-    //   var record = input[i];
-    //   var recordVals = [];
-    //   var numCols = Object.keys(record).length;
-    //   for (var j = 0; j < numCols; j++) {
-    //     var key = Object.keys(record)[j];
-    //     var value = record[key];
-    //     recordVals.push(value);
-    //   }
-    //   tableData.push(recordVals);
-    // }
-
-    // console.log(tableData)
-
-    // var col = [];
-    // var tableHeader = [];
-    // for (var i = 0; i < input.length; i++) {
-    //   for (var key in input[i]) {
-    //     if (col.indexOf(key) === -1) {
-    //       col.push(key);
-    //     }
-    //   }
-    // }
-    // for (var i in col) {
-    //   tableHeader.push({ title: col[i] });
-    // }
-
-    // $('#example').DataTable({
-    //   // "dom": '<"top"ip>rt<"clear">',
-    //   data: tableData, // extract this from input file
-    //   columns: tableHeader,
-    // });
-  }
+  // async postRender(input) {
+  //     $('#table').DataTable({
+  //       data: input, // extract this from input file
+  //       columns: input[0],
+  //     });
+  // }
   async checkCsvStructure() {
     const csvResults = [];
     let result = await this.getFile()
@@ -467,15 +437,20 @@ export default class fileInputView extends QuestionView {
     const itemModel = this.model.getItem(index);
     let shouldSelect = !itemModel.get('_isActive');
 
+
     shouldSelect = true;
     this.model.resetActiveItems();
+
     // Select or deselect accordingly
     itemModel.toggleActive(shouldSelect);
+
     let result = await this.getFile()
+    console.log(result.parse.data)
+
     let tableData = []
 
-    for (var i = 0; i < result.data.parse.length; i++) {
-      var record = result.data.parse[i];
+    for (var i = 0; i < result.parse.data.length; i++) {
+      var record = result.parse.data[i];
       var recordVals = [];
       var numCols = Object.keys(record).length;
       for (var j = 0; j < numCols; j++) {
@@ -490,8 +465,8 @@ export default class fileInputView extends QuestionView {
 
     var col = [];
     var tableHeader = [];
-    for (var i = 0; i < result.data.parse.length; i++) {
-      for (var key in result.data.parse[i]) {
+    for (var i = 0; i < result.parse.data.length; i++) {
+      for (var key in result.parse.data[i]) {
         if (col.indexOf(key) === -1) {
           col.push(key);
         }
@@ -506,8 +481,11 @@ export default class fileInputView extends QuestionView {
       data: tableData, // extract this from input file
       columns: tableHeader,
     });
+    // this.postRender(result.parse.data[0])
+    // this.createTable(result.parse.data)
     this.checkCsvStructure(result.parse.data)
     this.validateAjv(result.parse.data)
+    // this.feedbackAjv()
   }
 }
 
