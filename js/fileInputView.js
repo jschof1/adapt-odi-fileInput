@@ -1,6 +1,9 @@
 import QuestionView from 'core/js/views/questionView';
+// import ZingGrid from './zinggrid.min.js'
 import Papa from './csvToJson';
 import Ajv from './ajv7.min.js';
+import DataTable from 'libraries/jquery.dataTables.min';
+
 
 export default class fileInputView extends QuestionView {
 
@@ -24,20 +27,6 @@ export default class fileInputView extends QuestionView {
 
   onQuestionRendered() {
     this.setReadyStatus();
-  }
-
-  onItemFocus(event) {
-    if (!this.model.isInteractive()) return;
-
-    const index = parseInt($(event.currentTarget).data('adapt-index'));
-    const item = this.model.getChildren().findWhere({ _index: index });
-    item.set('_isHighlighted', true);
-  }
-
-  onItemBlur(event) {
-    const index = $(event.currentTarget).data('adapt-index');
-    const item = this.model.getChildren().findWhere({ _index: index });
-    item.set('_isHighlighted', false);
   }
 
   // Used by the question view to reset the look and feel of the component.
@@ -81,48 +70,64 @@ export default class fileInputView extends QuestionView {
   }
 
   async createTable(input) {
+    // //columns
+    // let col = [];
+    // for (let i = 0; i < input.length; i++) {
+    //   for (let key in input[i]) {
+    //     if (col.indexOf(key) === -1) {
+    //       col.push(key);
+    //     }
+    //   }
+    // }
 
-    //columns
-    let col = [];
-    for (let i = 0; i < input.length; i++) {
-      for (let key in input[i]) {
-        if (col.indexOf(key) === -1) {
-          col.push(key);
-        }
-      }
-    }
+
+    // //get headers
+    // let tableHeader = [];
+    // for (var i in col) {
+    //   tableHeader.push({ title: col[i] });
+    // }
+
+    // let table = document.createElement("table");
+    // table.setAttribute('id', 'table');
+    // let tr = table.insertRow(-1);
+    // for (let i = 0; i < col.length; i++) {
+    //   let th = document.createElement("th");
+    //   th.innerHTML = col[i];
+    //   tr.appendChild(th);
+    // }
+    // for (let i = 0; i < 8; i++) {
+    //   tr = table.insertRow(-1);
+    //   for (let j = 0; j < col.length; j++) {
+    //     let tabCell = tr.insertCell(-1);
+    //     tabCell.innerHTML = input[i][col[j]];
+    //   }
+    // }
+    // let divContainer = document.getElementById("result");
+    // divContainer.innerHTML = "";
+    // divContainer.appendChild(table);
+    // $('table').attr('id', 'table');
 
 
-    //get headers
-    let tableHeader = [];
-    for (var i in col) {
-      tableHeader.push({ title: col[i] });
-    }
+    // const gridConfig = {
+    //   caption: 'Hello-world',
+    //   data: input
+    // };
+    // console.log(input)
+    // console.log(ZingGrid)
 
-    let table = document.createElement("table");
-    table.setAttribute('id', 'table');
-    let tr = table.insertRow(-1);
-    for (let i = 0; i < col.length; i++) {
-      let th = document.createElement("th");
-      th.innerHTML = col[i];
-      tr.appendChild(th);
-    }
-    for (let i = 0; i < 8; i++) {
-      tr = table.insertRow(-1);
-      for (let j = 0; j < col.length; j++) {
-        let tabCell = tr.insertCell(-1);
-        tabCell.innerHTML = input[i][col[j]];
-      }
-    }
-    let divContainer = document.getElementById("result");
-    divContainer.innerHTML = "";
-    divContainer.appendChild(table);
-    $('table').attr('id', 'table');
+    // let zingGridRef = new ZingGrid('myFirstGrid', gridConfig);
+    // // console.log(zingGridRef)
+
+    // return zingGridRef
   }
-
-
+  // async postRender(input) {
+  //     $('#table').DataTable({
+  //       data: input, // extract this from input file
+  //       columns: input[0],
+  //     });
+  // }
   async checkCsvStructure() {
-
+    const csvResults = [];
     let result = await this.getFile()
     const lineBreaks = (csv) => {
       let csv_lines = csv.split('\n');
@@ -134,7 +139,7 @@ export default class fileInputView extends QuestionView {
         return csv_line_breaks.indexOf(item) == pos;
       });
       if (csv_line_breaks_unique.length > 1) {
-        console.log('Line breaks are not the same throughout the csv file.');
+        csvResults.push('Line breaks are not the same throughout the csv file.');
       }
     };
 
@@ -143,7 +148,7 @@ export default class fileInputView extends QuestionView {
       let csv_lines = csv.split('\n');
       let csv_headers = csv_lines[0].split(',');
       if (csv_headers.length == 1) {
-        console.log('The csv headers have not been declared.', `the headers are: ${headers}`);
+        csvResults.push('The csv headers have not been declared.', `the headers are: ${headers}`);
       }
     };
 
@@ -152,7 +157,7 @@ export default class fileInputView extends QuestionView {
       let csv_lines = csv.split('\n');
       let csv_headers = csv_lines[0].split(',');
       let csv_rows = []
-      // console.log(csv_rows)
+      // csvResults.push(csv_rows)
       for (let i = 1; i < csv_lines.length - 1; i++) {
         csv_rows.push(csv_lines[i].split(','));
       }
@@ -164,10 +169,10 @@ export default class fileInputView extends QuestionView {
         return csv_rows_columns.indexOf(item) == pos;
       });
       if (csv_rows_columns_unique.length > 1) {
-        // console.log(csv_rows_columns_unique[0])
-        // console.log(csv_rows_columns_unique)
+        // csvResults.push(csv_rows_columns_unique[0])
+        // csvResults.push(csv_rows_columns_unique)
         // const displayColumns = num => csv_rows_columns[csv_rows_columns_unique[num]]
-        console.log(
+        csvResults.push(
           "Every row in the file doesn't have the same number of columns.",
           `here are the column counts we have found: ${[...csv_rows_columns_unique]}`
         );
@@ -188,7 +193,7 @@ export default class fileInputView extends QuestionView {
         }
       }
       if (csv_rows_blank.length > 0) {
-        console.log('There are blank rows in the csv.', `see here: ${csv_rows_blank} / ${csv_rows.length - 1}`);
+        csvResults.push('There are blank rows in the csv.', `see here: ${csv_rows_blank} / ${csv_rows.length - 1}`);
       }
     };
 
@@ -212,7 +217,7 @@ export default class fileInputView extends QuestionView {
         }
       }
       if (csv_rows_whitespace.length > 0) {
-        console.log(
+        csvResults.push(
           'There is whitespace between commas and double quotes around fields in csv.',
           `whitespace: ${csv_rows_whitespace}`
         );
@@ -228,7 +233,7 @@ export default class fileInputView extends QuestionView {
       file_exists = true;
     }
     if (!file_exists) {
-      console.log('404 error');
+      csvResults.push('404 error');
     }
     const checkUTF8 = (csv) => {
       let utf8Text = csv;
@@ -237,7 +242,7 @@ export default class fileInputView extends QuestionView {
         utf8Text = decodeURIComponent(escape(csv));
         // If the conversion succeeds, text is not utf-8
       } catch (e) {
-        // console.log(e.message); // URI malformed
+        // csvResults.push(e.message); // URI malformed
         // This exception means text is utf-8
       }
       return utf8Text; // returned text is always utf-8
@@ -257,7 +262,7 @@ export default class fileInputView extends QuestionView {
         return csv_rows_columns.indexOf(item) == pos;
       });
       if (csv_rows_columns_unique.length == 1 && csv_rows_columns_unique[0] == 1) {
-        console.log(
+        csvResults.push(
           'The CSV file only contains a single comma-separated column.',
         );
       }
@@ -265,7 +270,7 @@ export default class fileInputView extends QuestionView {
     // Inconsistent values: if any column contains inconsistent values, for example if most values in a column are numeric but there's a significant proportion that aren't
     const find = (csv) => {
       var lineBreaks = csv.match(/\n/g);
-      console.log(lineBreaks);
+      csvResults.push(lineBreaks);
     }
     const inconsistentValues = (csv) => {
       let csv_lines = csv.split('\n');
@@ -308,7 +313,7 @@ export default class fileInputView extends QuestionView {
         csv_rows_columns_unique_max_columns_values.length <
         0.9
       ) {
-        console.log('There are inconsistent values in the csv file.');
+        csvResults.push('There are inconsistent values in the csv file.');
       }
     };
 
@@ -323,7 +328,7 @@ export default class fileInputView extends QuestionView {
         }
       }
       if (csv_headers_blank.length > 0) {
-        console.log("There are columns that don't have a name in the csv file.");
+        csvResults.push("There are columns that don't have a name in the csv file.");
       }
     };
     // Duplicate column name: if all the column names aren't unique
@@ -334,7 +339,7 @@ export default class fileInputView extends QuestionView {
         return csv_headers.indexOf(item) == pos;
       });
       if (csv_headers_unique.length != csv_headers.length) {
-        console.log('Not all the columns are unique.', `see here: ${csv_headers_unique}`);
+        csvResults.push('Not all the columns are unique.', `see here: ${csv_headers_unique}`)
       }
     };
 
@@ -348,9 +353,18 @@ export default class fileInputView extends QuestionView {
     inconsistentValues(result.contents)
     emptyColumnName(result.contents)
     duplicateColumnName(result.contents)
+
+    // this.model.get('_items')[0].feedback = userResult
+    // this.model.get('_feedback').correct = userResult
+    // this.model.get('_feedback')._incorrect.final = userResult
+    // this.model.get('_feedback')._partlyCorrect.final = userResult
+
+    return $('#feedbackCsv').html(`<ul> ${csvResults.map((result) => {
+      return `<li>${result}</li>`
+    })} </ul>`);
   }
 
-  async validate(input) {
+  async validateAjv(input) {
     function convertIntObj(input) {
       const res = {}
       for (const key in input) {
@@ -366,63 +380,112 @@ export default class fileInputView extends QuestionView {
     var arrayResult = Object.values(result);
     const ajv = new Ajv({ strict: false });
 
-    let schema = this.model.get('_schema')
+    // let schema =  ...this.model.get('_schema')
+
+
     let results = []
     // var testSchemaValidator = ajv.compile(schema);
     for (let i = 0; i < arrayResult.length; i++) {
-      let valid = ajv.validate(schema, arrayResult[i]);
+      let valid = ajv.validate(...this.model.get('_schema'), arrayResult[i]);
       if (!valid) {
         results.push(ajv.errors)
       }
-      console.log('hi')
-      if (results === []) {
-        return $('#feedback').html('ajv found no errors')
-      }
-      else if (validate.errors[0]["params"]["error"] === "missing") {
-        let missingCol = validate.errors[0]["params"]["missingProperty"];
-        console.log(`Cannot find required property "${missingCol}".`)
-      }
-      else {
-        $('#feedback').html(`the <strong> ${results[0][0]['instancePath'].slice(1,).toLowerCase()} </strong> an${results[0][0]['message']}`)
-      }
     }
+
+    // console.log(results)
+
+    // console.log(ajv.errors)
+    let userAjvResults = []
+
+    if (results.length == 0) {
+      userAjvResults.push('ajv found no errors')
+    }
+    // else if (ajv.errors[0][0]["params"]["error"] === "missing") {
+    //   let missingCol = ajv.errors[0]["params"]["missingProperty"];
+    //   userAjvResults.push(`Cannot find required property "${missingCol}".`)
+    // }
+    else {
+      userAjvResults.push(`the <strong> ${results[0][0]['instancePath'].slice(1,).toLowerCase()} </strong> an${results[0][0]['message']}`)
+    }
+    let userResult = userAjvResults
+
+
+    return $('#feedbackAjv').html(`<ul> ${userResult.map((result) => {
+      return `<li>${result}</li>`
+    })} </ul>`);
+
   }
-  //  async feedback(){
-  //   let userResult = await this.checkTest()
+  // async feedback() {
+  //   let userResult = await this.validateAjv();
   //   let arrResults
   //   for (let i of userResult.userResults) {
   //     arrResults = `${Object.values(i)}`
+  //     console.log(arrResults)
   //   }
 
   //   this.model.get('_items')[0].feedback = arrResults
   //   this.model.get('_feedback').correct = arrResults
   //   this.model.get('_feedback')._incorrect.final = arrResults
   //   this.model.get('_feedback')._partlyCorrect.final = arrResults
-  //  return $('#feedback').text(arrResults)
-  //  }
+  //   return $('#feedback').text(arrResults)
+  // }
 
   async onInputChanged(e) {
 
-    if (!this.model.isInteractive()) return;
 
     const index = $(e.currentTarget).data('adapt-index');
     const itemModel = this.model.getItem(index);
     let shouldSelect = !itemModel.get('_isActive');
 
-    if (this.model.isSingleSelect()) {
-      // Assume a click is always a selection
-      shouldSelect = true;
-      this.model.resetActiveItems();
-    } else if (shouldSelect && this.model.isAtActiveLimit()) {
-      // At the selection limit, deselect the last item
-      this.model.getLastActiveItem().toggleActive(false);
-    }
+
+    shouldSelect = true;
+    this.model.resetActiveItems();
+
     // Select or deselect accordingly
     itemModel.toggleActive(shouldSelect);
+
     let result = await this.getFile()
-    this.checkCsvStructure()
-    this.validate(result.parse.data)
-    this.createTable(result.parse.data)
+    console.log(result.parse.data)
+
+    let tableData = []
+
+    for (var i = 0; i < result.parse.data.length; i++) {
+      var record = result.parse.data[i];
+      var recordVals = [];
+      var numCols = Object.keys(record).length;
+      for (var j = 0; j < numCols; j++) {
+        var key = Object.keys(record)[j];
+        var value = record[key];
+        recordVals.push(value);
+      }
+      tableData.push(recordVals);
+    }
+
+    console.log(tableData)
+
+    var col = [];
+    var tableHeader = [];
+    for (var i = 0; i < result.parse.data.length; i++) {
+      for (var key in result.parse.data[i]) {
+        if (col.indexOf(key) === -1) {
+          col.push(key);
+        }
+      }
+    }
+    for (var i in col) {
+      tableHeader.push({ title: col[i] });
+    }
+
+    $('#example').DataTable({
+      // "dom": '<"top"ip>rt<"clear">',
+      data: tableData, // extract this from input file
+      columns: tableHeader,
+    });
+    // this.postRender(result.parse.data[0])
+    // this.createTable(result.parse.data)
+    this.checkCsvStructure(result.parse.data)
+    this.validateAjv(result.parse.data)
+    // this.feedbackAjv()
   }
 }
 

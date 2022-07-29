@@ -9,19 +9,6 @@
 
       <input class="mcq__item-input js-item-input" type="file" id="{{../_id}}-{{@index}}-input" {{#if ../_isRadio}}name="{{../_id}}-item" {{/if}} type="file"{{#unless ../_isEnabled}} disabled{{/unless}} aria-label="{{{a11y_normalize text}}}" data-adapt-index="{{_index}}" />
 
-      <label class="mcq__item-label js-item-label{{#unless ../_isEnabled}} is-disabled{{/unless}}{{#if _isSelected}} is-selected{{/if}}" aria-hidden="true" for="{{../_id}}-{{@index}}-input" data-adapt-index="{{_index}}" >
-
-        <div class="mcq__item-state">
-          <div class="mcq__item-icon mcq__item-answer-icon{{#if ../_isRadio}} is-radio{{else}} is-checkbox{{/if}}">
-            <div class="icon"></div>
-          </div>
-          <div class="mcq__item-icon mcq__item-correct-icon">
-            <div class="icon"></div>
-          </div>
-          <div class="mcq__item-icon mcq__item-incorrect-icon">
-            <div class="icon"></div>
-          </div>
-        </div>
 
         <div class="mcq__item-text">
           <div class="mcq__item-text-inner">
@@ -36,8 +23,10 @@
     
 
   </div>
-    <div id="feedback"></div>
-  <div id="result"></div>
+    <div id="feedbackAjv"></div>
+    <div id="feedbackCsv"></div>
+    <div id="table"></div>
+    <table id="example" class="display" width="100%"></table>
   <div class="btn__container"></div>
 
 </div>
