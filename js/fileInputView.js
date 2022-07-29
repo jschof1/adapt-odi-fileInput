@@ -446,13 +446,6 @@ export default class fileInputView extends QuestionView {
 
     let result = await this.getFile()
     console.log(result.parse.data)
-    $.each(result.parse.data, function(key, value){
-      if (value === "" || value === null){
-          delete result.parse.data[key];
-      }
-  });
-  console.log(result.parse.data)
-  
 
     let tableData = []
 
