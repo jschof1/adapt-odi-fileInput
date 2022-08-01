@@ -16,7 +16,6 @@ export default class fileInputView extends QuestionView {
     };
   }
 
-
   resetQuestionOnRevisit() {
     this.resetQuestion();
   }
@@ -63,17 +62,14 @@ export default class fileInputView extends QuestionView {
         header: true
       });
       let fileObj = await { parse: parse, contents: contents }
-
       return await fileObj
     }
-
     return onSubmit()
   }
 
-  async createTable(){
+  async createTable() {
     let result = await this.getFile()
     // console.log(result.parse.data, 'hi')
-
     let tableData = []
 
     for (var i = 0; i < result.parse.data.length; i++) {
@@ -87,7 +83,7 @@ export default class fileInputView extends QuestionView {
       }
       tableData.push(recordVals);
     }
-
+    //remove unwanted data tables alerts
     window.alert = function () { }
 
     var col = [];
@@ -161,7 +157,6 @@ export default class fileInputView extends QuestionView {
         );
       }
     };
-
     // Blank rows: if there are any blank rows
     const blankRows = (csv) => {
       let csv_lines = csv.split('\n');
@@ -337,13 +332,7 @@ export default class fileInputView extends QuestionView {
     emptyColumnName(result.contents)
     duplicateColumnName(result.contents)
 
-    // this.model.get('_items')[0].feedback = userResult
-    // this.model.get('_feedback').correct = userResult
-    // this.model.get('_feedback')._incorrect.final = userResult
-    // this.model.get('_feedback')._partlyCorrect.final = userResult
-
     return csvResults
-
   }
 
   // return $('#feedbackCsv').html(`<ul> ${csvResults.map((result) => {
@@ -368,7 +357,6 @@ export default class fileInputView extends QuestionView {
 
     // let schema =  ...this.model.get('_schema')
 
-
     let results = []
     // var testSchemaValidator = ajv.compile(schema);
     for (let i = 0; i < arrayResult.length; i++) {
@@ -379,8 +367,8 @@ export default class fileInputView extends QuestionView {
     }
 
     // console.log(results)
-
     // console.log(ajv.errors)
+
     let userAjvResults = []
 
     if (results.length == 0) {
@@ -411,20 +399,24 @@ export default class fileInputView extends QuestionView {
     //   console.log(arrResults)
     // }
 
+    // we could use this for the scoring?
     let csvErrors = csv.length
     let ajvErrors = ajv.length
 
     let combinedArr = ajv.concat(csv)
 
-    console.log(combinedArr)
+    let answerList = `<ul> ${combinedArr.map((result) => {
+      return `<li>${result}</li>`
+    }).join('')} </ul>`
 
-    this.model.get('_items')[0].feedback = combinedArr
-    this.model.get('_feedback').correct = combinedArr
-    this.model.get('_feedback')._incorrect.final = combinedArr
-    this.model.get('_feedback')._partlyCorrect.final = combinedArr
-    combinedArr.map(() => {
+    // console.log(coshema)
 
-    })
+    this.model.get('_items')[0].feedback = answerList
+    this.model.get('_feedback').correct = answerList
+    this.model.get('_feedback')._incorrect.final = answerList
+    this.model.get('_feedback')._partlyCorrect.final = answerList
+    // const item = this.model.get('_items')[0]
+
     return $('#feedback').html(`<ul> ${combinedArr.map((result) => {
       return `<li>${result}</li>`
     }).join('')} </ul>`);
@@ -447,19 +439,16 @@ export default class fileInputView extends QuestionView {
   //   }
 
   async onInputChanged(e) {
-
-
     const index = $(e.currentTarget).data('adapt-index');
     const itemModel = this.model.getItem(index);
     let shouldSelect = !itemModel.get('_isActive');
-
 
     shouldSelect = true;
     this.model.resetActiveItems();
 
     // Select or deselect accordingly
-    itemModel.toggleActive(shouldSelect);
     // this.removeButton()
+    itemModel.toggleActive(shouldSelect);
     this.createTable()
     this.feedback()
   }
