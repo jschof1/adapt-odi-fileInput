@@ -67,12 +67,13 @@
       "translatable": true
     },
     "_schema": {
+      "title":Validation schema
       "type": "string",
       "required": true,
       "default": "",
-      "inputType": "TextArea",
-      "validators": [],
-      "help": "This is the schema",
+      "inputType": "Asset:other",
+      "validators": ["required"],
+      "help": "This is where you insert the schema",
       "translatable": true
     },
     "_items": {
