@@ -67,7 +67,7 @@
       "translatable": true
     },
     "_schema": {
-      "title":Validation schema
+      "title":Validation schema,
       "type": "string",
       "required": true,
       "default": "",
