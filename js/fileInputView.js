@@ -365,48 +365,61 @@ export default class fileInputView extends QuestionView {
       }
       return res;
     }
-    console.log(result)
+    // console.log(result)
     var r = convertIntObj(result.parse.data);
     var arrayResult = Object.values(r);
-    const ajv = new Ajv({ strict: false });
+    // console.log(arrayResult)
+    const ajv = new Ajv({
+      allErrors: true,
+      strict: false,
+      validateFormats: 'full',
+    });
+    let _schema =  this.model.get('_schema')
+    ajv.addFormat('float', /^\$(\d{1,3}(\,\d{3})*|(\d+))(\.\d{2})?$/);
 
-    // let schema =  ...this.model.get('_schema')
-// 
-
-    let results = []
-    // var testSchemaValidator = ajv.compile(schema);
+    let errorList = [];
+    // var testSchemaValidator = ajv.compile(_schema);
     for (let i = 0; i < arrayResult.length; i++) {
-      let valid = ajv.validate(this.model.get('_schema'), arrayResult[i]);
+      let valid = ajv.validate(_schema, arrayResult[i]);
+      console.log(valid);
       // let valid = testSchemaValidator(arrayResult[i]);
-      console.log(valid)
+      // console.log(valid);
       if (!valid) {
-        results.push(ajv.errors)
+        errorList.push(ajv.errors);
       }
     }
+    console.log(errorList);
 
     // console.log(results)
 
     // console.log(results)
-    let userAjvResults = []
-
-    if (results.length == 0) {
-      userAjvResults.push('<a href="https://ajv.js.org/">Ajv Validator</a> found no errors')
-    }
-    // else if (ajv.errors[0][0]["params"]["error"] === "missing") {
-    //   let missingCol = ajv.errors[0]["params"]["missingProperty"];
-    //   userAjvResults.push(`Cannot find required property "${missingCol}".`)
-    // }
-    else {
-     console.log(...results)
-     let getErrors = results.map((r) => {
-      return r[0]['instancePath'].slice(1,).toLowerCase() + " " + r[0]['message']
-        // r[0]['instancePath'].slice(1,).toLowerCase()
-        // r[0]['message']
-      })
-      console.log(...getErrors)
-      // userAjvResults.push(`the <strong> ${results[0][0]['instancePath'].slice(1,).toLowerCase()} </strong> an${results[0][0]['message']}`)
-    }
-    let userResult = userAjvResults
+    let errText = [];
+    errorList.map((a) => {
+      a.map((b) => {
+        // console.log(b.instancePath.slice(1))
+        let colName = b['instancePath'].slice(1);
+        let colType = b['keyword'];
+        //delete words 'must have required' from message object
+       let problem = b['message']
+        if (colType === 'type' || 'format') {
+          var errMsg = `"${colName}" ${colType} ${problem}.`;
+          errText.push(errMsg);
+        } else if (b['params']['error'] === 'missing') {
+          let missingCol = b['params']['missingProperty'];
+          var errMsg = `Cannot find required property "${missingCol}".`;
+          errText.push(errMsg);
+        } else if (colType === 'enum') {
+          let allowed = b['params']['allowedValues'];
+          let missingCol = b['params']['missingProperty'];
+          var errMsg = `"<strong> ${colName} </strong>" must be one of ${allowed}.`;
+          errText.push(errMsg);
+        }
+      });
+    });
+    
+    
+    const userResult = [...new Set(errText)];
+    console.log(userResult)
 
 
     return userResult
@@ -441,7 +454,7 @@ export default class fileInputView extends QuestionView {
     // console.log(this.model.get('_items')[0]["_score"])
     // this.model.get('_feedback')._incorrect.final = combinedArr
     this.model.get('_feedback')._partlyCorrect.final = combinedArr
-    const feedback = await $('#feedback').html(`<ul> ${combinedArr.map((result) => {
+    const feedback = await $('#feedback').html(`<h1> Errors </h1> <ul> ${combinedArr.map((result) => {
       return `<li>${result}</li>`
     }).join('')} </ul>`);
 
@@ -465,8 +478,6 @@ export default class fileInputView extends QuestionView {
   //   }
 
   async onInputChanged(e) {
-
-
     const index = $(e.currentTarget).data('adapt-index');
     const itemModel = this.model.getItem(index);
     let shouldSelect = !itemModel.get('_isActive');
