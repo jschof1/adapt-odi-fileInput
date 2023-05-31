@@ -69,9 +69,11 @@
     "_schema": {
       "type": "string",
       "required": true,
-      "title": "Validation schema",
-      "inputType": "Asset:other",
-      "validators": ["required"]
+      "default": "",
+      "inputType": "TextArea",
+      "validators": [],
+      "help": "This is the schema",
+      "translatable": true
     },
     "_items": {
       "type": "array",

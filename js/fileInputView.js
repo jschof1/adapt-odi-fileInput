@@ -16,7 +16,6 @@ export default class fileInputView extends QuestionView {
     };
   }
 
-
   resetQuestionOnRevisit() {
     this.resetQuestion();
   }
@@ -104,13 +103,12 @@ export default class fileInputView extends QuestionView {
     }
 
     $('#example').DataTable({
-      "dom": '<"top"ip>rt<"clear">',
+      // "dom": '<"top"ip>rt<"clear">',
       data: tableData, // extract this from input file
       columns: tableHeader,
-      scrollX: true,
     });
   }
-
+  // check csv structure for issues
   async checkCsvStructure() {
     const csvResults = [];
     let result = await this.getFile()
@@ -158,8 +156,7 @@ export default class fileInputView extends QuestionView {
         // csvResults.push(csv_rows_columns_unique)
         // const displayColumns = num => csv_rows_columns[csv_rows_columns_unique[num]]
         csvResults.push(
-          "Every row in the file doesn't have the same number of columns.",
-          `here are the column counts we have found: ${[...csv_rows_columns_unique]}`
+          `Some rows in the CSV file have a different number of columns. Column counts found: ${[...csv_rows_columns_unique]}`
         );
       }
     };
@@ -178,7 +175,7 @@ export default class fileInputView extends QuestionView {
         }
       }
       if (csv_rows_blank.length > 0) {
-        csvResults.push('There are blank rows in the csv.', `see here: ${csv_rows_blank} / ${csv_rows.length - 1}`);
+        csvResults.push('There are blank rows in the CSV file.', `see here: ${csv_rows_blank} / ${csv_rows.length - 1}`);
       }
     };
 
@@ -203,7 +200,7 @@ export default class fileInputView extends QuestionView {
       }
       if (csv_rows_whitespace.length > 0) {
         csvResults.push(
-          'There is whitespace between commas and double quotes around fields in csv.',
+          'There is whitespace between commas or double quotes around fields in the CSV file.',
           `whitespace: ${csv_rows_whitespace}`
         );
       }
@@ -298,7 +295,7 @@ export default class fileInputView extends QuestionView {
         csv_rows_columns_unique_max_columns_values.length <
         0.9
       ) {
-        csvResults.push(`There are inconsistent values in the csv file.`);
+        csvResults.push('There are inconsistent values in the file.');
       }
     };
 
@@ -313,7 +310,7 @@ export default class fileInputView extends QuestionView {
         }
       }
       if (csv_headers_blank.length > 0) {
-        csvResults.push("There are columns that don't have a name in the csv file.");
+        csvResults.push("Some of the columns in the CSV file don't have a name.");
       }
     };
     // Duplicate column name: if all the column names aren't unique
@@ -324,10 +321,82 @@ export default class fileInputView extends QuestionView {
         return csv_headers.indexOf(item) == pos;
       });
       if (csv_headers_unique.length != csv_headers.length) {
-        csvResults.push('Not all the columns are unique.', `see here: ${csv_headers_unique}`)
+        csvResults.push('There are duplicate column headers in the CSV file.', `see here: ${csv_headers_unique}`)
       }
     };
-    // console.log(result.contents)
+    // checking for too many columns (GB totals left in)
+    const checkCols = (csv) => {
+      let csv_lines = csv.split('\n');
+      let csv_rows = [];
+      for (let i = 1; i < csv_lines.length - 1; i++) {
+        csv_rows.push(csv_lines[i].split(','));
+      }
+      let csv_rows_columns = [];
+      for (let i = 0; i < csv_rows.length - 1; i++) {
+        csv_rows_columns.push(csv_rows[i].length);
+      }
+      let csv_rows_columns_unique = csv_rows_columns.filter(function (item, pos) {
+        return csv_rows_columns.indexOf(item) == pos;
+      });
+      if (csv_rows_columns_unique[0] != 6) {
+        csvResults.push(
+          `Wrong number of columns: ${csv_rows_columns_unique[0]}.`,
+        );
+      }
+    };
+    // checking for too many rows (totals left in)
+    const checkRows = (csv) => {
+      let csv_lines = csv.split('\n');
+      let csv_rows = [];
+      for (let i = 1; i < csv_lines.length - 1; i++) {
+        csv_rows.push(csv_lines[i].split(','));
+      }
+      //console.log(csv_rows);
+      if (csv_rows.length !== 38) {
+        csvResults.push(
+          `Wrong number of data rows: ${csv_rows.length}.`);
+      }
+    };
+    // checking numeric columns
+    const checkVals = (csv) => {
+      let csv_lines = csv.split('\n');
+      let csv_rows = [];
+      for (let i = 1; i < csv_lines.length - 1; i++) {
+        csv_rows.push(csv_lines[i].split(','));
+      }
+      //console.log(csv_rows);
+      let arrNum = [] // fetching all values from numeric columns
+      for (i = 0; i < csv_rows.length; i+=1) {
+        arrNum.push(parseInt(csv_rows[i][3]));
+        arrNum.push(parseInt(csv_rows[i][4]))
+        arrNum.push(parseInt(csv_rows[i][5]))
+      }
+      //console.log(arrEN.length);
+      if (arrNum.length > 0) {
+        let sumNum = arrNum.reduce((a, b) => a + b, 0);
+        //console.log('sumNumeric', sumNum);
+        let numType = typeof(sumNum);
+        //console.log('numeric columns type', numType);
+        if (isNaN(sumNum)) {
+          csvResults.push(
+            `Expecting numeric values, got an error: ${sumNum}.`);
+          }
+        }
+      }
+
+    // grading is PASS if it's a machine readable CSV
+    // with ownership, genus, species and 3 columns of numeric values by country
+    // and column headers matching the given schema
+    // ownership, genus, species, england, wales, scotland
+
+    // automatic fail if it's a bad CSV (ajv or csvResults picks up issues)
+
+    // caution / force redo if totals are left in (too many rows or columns)
+    // or if columns/rows are missing
+    // or if number columns aren't numeric
+    // or if structure doesn't match the given schema
+
+    //console.log(result.contents)
     lineBreaks(result.contents)
     undeclaredHeader(result.contents)
     raggedRows(result.contents)
@@ -338,6 +407,9 @@ export default class fileInputView extends QuestionView {
     inconsistentValues(result.contents)
     emptyColumnName(result.contents)
     duplicateColumnName(result.contents)
+    checkRows(result.contents)
+    checkCols(result.contents)
+    checkVals(result.contents)
 
     // this.model.get('_items')[0].feedback = userResult
     // this.model.get('_feedback').correct = userResult
@@ -352,8 +424,7 @@ export default class fileInputView extends QuestionView {
   //   return `<li>${result}</li>`
   // })} </ul>`);
 
-  async validateAjv() {
-    let result = await this.getFile()
+  async validateAjv(input) {
     function convertIntObj(input) {
       const res = {}
       for (const key in input) {
@@ -365,61 +436,38 @@ export default class fileInputView extends QuestionView {
       }
       return res;
     }
-    // console.log(result)
-    var r = convertIntObj(result.parse.data);
-    var arrayResult = Object.values(r);
-    // console.log(arrayResult)
-    const ajv = new Ajv({
-      allErrors: true,
-      strict: false,
-      validateFormats: 'full',
-    });
-    let _schema =  this.model.get('_schema')
-    ajv.addFormat('float', /^\$(\d{1,3}(\,\d{3})*|(\d+))(\.\d{2})?$/);
+    var result = convertIntObj(input);
+    var arrayResult = Object.values(result);
+    const ajv = new Ajv({ strict: false });
 
-    let errorList = [];
-    // var testSchemaValidator = ajv.compile(_schema);
+    // let schema =  ...this.model.get('_schema')
+
+
+    let results = []
+    // var testSchemaValidator = ajv.compile(schema);
     for (let i = 0; i < arrayResult.length; i++) {
-      let valid = ajv.validate(_schema, arrayResult[i]);
-      console.log(valid);
-      // let valid = testSchemaValidator(arrayResult[i]);
-      // console.log(valid);
+      let valid = ajv.validate(...this.model.get('_schema'), arrayResult[i]);
       if (!valid) {
-        errorList.push(ajv.errors);
+        results.push(ajv.errors)
       }
     }
-    console.log(errorList);
 
     // console.log(results)
 
-    // console.log(results)
-    let errText = [];
-    errorList.map((a) => {
-      a.map((b) => {
-        // console.log(b.instancePath.slice(1))
-        let colName = b['instancePath'].slice(1);
-        let colType = b['keyword'];
-        //delete words 'must have required' from message object
-       let problem = b['message']
-        if (colType === 'type' || 'format') {
-          var errMsg = `"${colName}" ${colType} ${problem}.`;
-          errText.push(errMsg);
-        } else if (b['params']['error'] === 'missing') {
-          let missingCol = b['params']['missingProperty'];
-          var errMsg = `Cannot find required property "${missingCol}".`;
-          errText.push(errMsg);
-        } else if (colType === 'enum') {
-          let allowed = b['params']['allowedValues'];
-          let missingCol = b['params']['missingProperty'];
-          var errMsg = `"<strong> ${colName} </strong>" must be one of ${allowed}.`;
-          errText.push(errMsg);
-        }
-      });
-    });
-    
-    
-    const userResult = [...new Set(errText)];
-    console.log(userResult)
+    // console.log(ajv.errors)
+    let userAjvResults = []
+
+    if (results.length == 0) {
+      userAjvResults.push('ajv found no errors')
+    }
+    // else if (ajv.errors[0][0]["params"]["error"] === "missing") {
+    //   let missingCol = ajv.errors[0]["params"]["missingProperty"];
+    //   userAjvResults.push(`Cannot find required property "${missingCol}".`)
+    // }
+    else {
+      userAjvResults.push(`the <strong> ${results[0][0]['instancePath'].slice(1,).toLowerCase()} </strong> an${results[0][0]['message']}`)
+    }
+    let userResult = userAjvResults
 
 
     return userResult
@@ -437,55 +485,45 @@ export default class fileInputView extends QuestionView {
     //   console.log(arrResults)
     // }
 
+    let csvErrors = csv.length
+    let ajvErrors = ajv.length
 
-
-    //set score in model
-  
     let combinedArr = ajv.concat(csv)
 
-    //turn comibinedArr into a string
-    let combinedArrString = combinedArr.join(' <br />')
-    console.log(combinedArrString)
+    console.log(combinedArr)
 
 
-    this.model.get('_items')[0].feedback = combinedArr
-    this.model.get('_items')[0]["_score"] = combinedArr.length
-    this.model.get('_feedback').correct = combinedArrString
-    // console.log(this.model.get('_items')[0]["_score"])
-    // this.model.get('_feedback')._incorrect.final = combinedArr
-    this.model.get('_feedback')._partlyCorrect.final = combinedArr
-    const feedback = await $('#feedback').html(`<h1> Errors </h1> <ul> ${combinedArr.map((result) => {
-      return `<li>${result}</li>`
+    let combinedString = combinedArr.join('<br>');
+
+    this.model.get('_items')[0].feedback = combinedString;
+    this.model.get('_feedback').correct = combinedString;
+    this.model.get('_feedback')._incorrect.final = combinedString;
+    this.model.get('_feedback')._partlyCorrect.final = combinedString;
+
+    return $('#feedback').html(`<ul> ${combinedArr.map((result) => {
+      return `<li>${result}</li>`;
     }).join('')} </ul>`);
-
-    return feedback
   }
-
-  // async removeButton() {
-  //   const tableContents = $("#example-wrapper")
-  //   const $itemInput = this.$('.js-item-input').eq(0)
-  //   // console.log($itemInput)
-  //   /* create button that removes uploaded file so that the user can reupload */
-  //   var clearUploadButton = document.createElement('button');
-  //   clearUploadButton.innerHTML = 'Clear Upload';
-  //   clearUploadButton.onclick = function() {
-  //     $itemInput.val('');
-  //     tableContents.html('');
-  //     $itemInput.trigger('change');
-
-  //   };
-  //   document.body.appendChild(clearUploadButton);
-  //   }
 
   async onInputChanged(e) {
     const index = $(e.currentTarget).data('adapt-index');
     const itemModel = this.model.getItem(index);
     let shouldSelect = !itemModel.get('_isActive');
+
     shouldSelect = true;
     this.model.resetActiveItems();
+
+    // Select or deselect accordingly
     itemModel.toggleActive(shouldSelect);
-    this.createTable()
-    this.feedback()
+
+    // Check if a submission is allowed
+    const canSubmit = this.model.canSubmit();
+    if (!canSubmit) {
+      console.log('Submission not allowed.');
+      return;  // Exit the function if submission is not allowed
+    }
+    // Continue with your function if submission is allowed
+    this.createTable();
+    this.feedback();
   }
 }
-
